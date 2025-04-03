@@ -1,12 +1,15 @@
-import mongoose from 'mongoose';
-
+import mongoose from "mongoose";
+declare global {
+  var mongoose: any; // This must be a `var` and not a `let / const`
+}
+console.log("hello");
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+  throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-/** 
+/**
  * Cached connection for MongoDB.
  */
 let cached = global.mongoose;
@@ -16,7 +19,8 @@ if (!cached) {
 }
 
 async function dbConnect() {
-  console.log('process.env.MONGODB_URI :>> ', process.env.MONGODB_URI);
+  console.log("process.env.MONGODB_URI :>> ", process.env.MONGODB_URI);
+  console.log("Attempting to connect to MongoDB...");
 
   if (cached.conn) {
     return cached.conn;
@@ -32,5 +36,3 @@ async function dbConnect() {
 }
 
 export default dbConnect;
-
-dbConnect();
