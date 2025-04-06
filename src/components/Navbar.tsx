@@ -17,6 +17,9 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/testpage">
                 Testpage
               </Nav.Link>
+              <Nav.Link as={Link} href="/chatbot">
+                Chat
+              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
