@@ -2,6 +2,10 @@
 
 import normalChat from "@/actions/chat";
 import React, { useState } from "react";
+import "@/styles/global.css";
+import styles from "./page.module.css";
+import "./page.module.css";
+import { Button, Form } from "react-bootstrap";
 
 export type ChatMessage = {
   role: string;
@@ -39,14 +43,14 @@ function NormalChat() {
     setMessages([]);
   };
   return (
-    <div className="mt-4">
-      <div className="border rounded p-2 mb-2 h-64 overflow-y-auto">
+    <div>
+      <div className={styles.chatContainer}>
         {messages &&
           messages.map((msg, index) => (
             <div
               key={index}
-              className={`mb-2 ${
-                msg.role === "user" ? "text-left" : "text-right"
+              className={`${styles.singleMessageContainer} ${
+                msg.role === "user" ? styles.userMessage : styles.otherMessage
               }`}
             >
               <strong>
@@ -56,25 +60,32 @@ function NormalChat() {
             </div>
           ))}
       </div>
-      <div className="flex">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          className="border rounded p-2 mr-2 flex-grow"
-        />
-        <button
-          onClick={handleChat}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Send
-        </button>
-        <button
-          onClick={handleClearChat}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2"
-        >
-          Clear Chat
-        </button>
+      <div className={styles.inputChatContainer}>
+        <Form id="form">
+          <div className={styles.sendMessageContainer}>
+            <Form.Group controlId="message-input">
+              <Form.Control
+                type="text"
+                as="textarea"
+                placeholder="Type a message"
+                name="message"
+                autoCapitalize="on"
+                autoComplete="off"
+                autoCorrect="on"
+                onChange={(e) => setInputMessage(e.target.value)}
+                value={inputMessage}
+              />
+            </Form.Group>
+            {inputMessage.length > 0 ? (
+              <Button onClick={handleChat} type="submit">
+                Send
+              </Button>
+            ) : (
+              <Button disabled>Send</Button>
+            )}
+            <Button onClick={handleClearChat}>Clear</Button>
+          </div>
+        </Form>
       </div>
     </div>
   );

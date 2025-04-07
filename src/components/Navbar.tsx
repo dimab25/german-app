@@ -9,11 +9,14 @@ function NavbarElement() {
       <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
           <Navbar.Brand as={Link} href="/">
-            Home
+            PROJECT NAME
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
+              <Nav.Link as={Link} href="/">
+                Home
+              </Nav.Link>
               <Nav.Link as={Link} href="/testpage">
                 Testpage
               </Nav.Link>

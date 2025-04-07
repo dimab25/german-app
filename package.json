@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@google/genai": "^0.7.0",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.5",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.1",
     "next": "15.2.4",
