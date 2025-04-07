@@ -49,7 +49,9 @@ function NormalChat() {
                 msg.role === "user" ? "text-left" : "text-right"
               }`}
             >
-              <strong>{msg.role === "user" ? "You:" : "Assistant:"}</strong>{" "}
+              <strong>
+                {msg.role === "user" ? "You:" : "German teacher:"}
+              </strong>{" "}
               {msg.content}
             </div>
           ))}
