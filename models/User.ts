@@ -2,22 +2,22 @@ import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema(
   {
-    email: { unique: true, require: true, type: String },
-    name: { require: true, type: String },
-    password: { require: true, type: String },
+    email: { unique: true, required: true, type: String },
+    name: { required: true, type: String },
+    password: { required: true, type: String },
 
-    imageUrl: { require: false, type: String },
+    imageUrl: { required: false, type: String },
 
-    native_language: { require: true, type: String },
+    native_language: { required: false, type: String },
 
     flashcards: [
       {
-        require: false,
+        required: false,
         type: mongoose.Schema.Types.ObjectId,
         ref: "Flashcard",
       },
     ],
-    chats: { require: true, type: String },
+    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
   },
   { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
 );

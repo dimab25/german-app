@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 import FlashcardsModel from "../../../models/Fleshcards";
+import UsersModel from "../../../models/User";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,9 +15,9 @@ export default async function handler(
   await dbConnect();
 
   switch (method) {
-    case "GET" /* Get a model by its ID */:
+    case "GET" /* Get a model by User_id */:
       try {
-        const flashcard = await FlashcardsModel.findById(id);
+        const flashcard = await FlashcardsModel.find({user_id: id});
         if (!flashcard) {
           return res.status(400).json({ success: false });
         }
@@ -59,7 +60,11 @@ export default async function handler(
     case "DELETE" /* Delete a model by its ID */:
       try {
         const deletedFlashcard = await FlashcardsModel.deleteOne({ _id: id });
-        if (!deletedFlashcard) {
+        const deletedFlashcardIdUserprofile= await UsersModel.findOneAndUpdate({flashcards: id}, {$pull:{flashcards: id}}, {new:true});
+        if (!deletedFlashcard ) {
+          return res.status(400).json({ success: false });
+        }
+        if (!deletedFlashcardIdUserprofile ) {
           return res.status(400).json({ success: false });
         }
         res
