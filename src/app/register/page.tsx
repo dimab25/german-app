@@ -5,6 +5,12 @@ import { Button, Form } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import "@/styles/global.css";
 import styles from "./page.module.css";
+import Link from "next/link";
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "@/utils/inputValidators";
 // import "react-toastify/dist/ReactToastify.css";
 // import "../styles/LoginRegister.css";
 
@@ -18,19 +24,6 @@ function Register() {
     email: "",
     password: "",
   });
-
-  const validateUsername = (username: string) => {
-    return username.length >= 4;
-  };
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // regular expression used to validate emails
-    return emailRegex.test(email); // test method checks if the email string matches the pattern
-  };
-
-  const validatePassword = (password: string) => {
-    return password.length >= 6;
-  };
 
   const handleUsernameInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -154,7 +147,12 @@ function Register() {
               <Button disabled>Register</Button>
             )}
           </div>
-          <div>Already have an account? Sign in!</div>
+          <div>
+            Already have an account?{" "}
+            <Link className="link-register" href="/login">
+              Sign in!
+            </Link>
+          </div>
         </form>
       </div>
       <ToastContainer />
