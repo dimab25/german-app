@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
 
 function NavbarElement() {
   return (
@@ -17,12 +17,18 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/">
                 Home
               </Nav.Link>
-              <Nav.Link as={Link} href="/testpage">
-                Testpage
-              </Nav.Link>
+
               <Nav.Link as={Link} href="/chatbot">
                 Chat
               </Nav.Link>
+            </Nav>
+            <Nav>
+              {" "}
+              <div>
+                <Link href={"/login"}>
+                  <Button>Login</Button>
+                </Link>
+              </div>
             </Nav>
           </Navbar.Collapse>
         </Container>
