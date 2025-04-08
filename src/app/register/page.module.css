@@ -1,0 +1,56 @@
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registerForm {
+  background-color: lightgrey;
+  border-radius: 8%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  justify-content: center;
+  height: 450px;
+  max-width: 380px;
+  padding: 20px;
+  width: 380px;
+  text-align: center;
+  outline: solid 2px grey;
+}
+
+.loginButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.link-register {
+  text-decoration: none;
+  color: var(--color);
+  transition: color 0.8s ease-in-out;
+  font-weight: 800;
+}
+
+.error {
+  color: red;
+  font-size: 15px;
+}
+.errorInput {
+  border: 1px solid red;
+}
+
+/* #password-input {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+} */
+
+@media (max-width: 480px) {
+  .register-form {
+    max-width: 90%;
+    width: 90%;
+    padding: 15px;
+    gap: 15px;
+  }
+}

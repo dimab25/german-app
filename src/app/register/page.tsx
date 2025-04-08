@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 
 import { ToastContainer } from "react-toastify";
+import "@/styles/global.css";
+import styles from "./page.module.css";
 // import "react-toastify/dist/ReactToastify.css";
 // import "../styles/LoginRegister.css";
 
@@ -96,22 +98,22 @@ function Register() {
     <>
       <h1>Register</h1>
 
-      <div className="form-container">
-        <form className="register-form">
+      <div className={styles.formContainer}>
+        <form className={styles.registerForm}>
           <Form.Group controlId="username">
             <Form.Control
               type="text"
               placeholder="Enter username"
               name="username"
               onChange={handleUsernameInputChange}
-              className={
+              className={`${
                 errors.username && errors.username.length > 0
-                  ? "errorInput"
+                  ? styles.errorInput
                   : ""
-              }
+              }`}
             />
             {errors.username && errors.username.length > 0 ? (
-              <p className="error">{errors.username}</p>
+              <p className={styles.error}>{errors.username}</p>
             ) : (
               ""
             )}
@@ -123,12 +125,12 @@ function Register() {
               placeholder="Enter email"
               name="email"
               onChange={handleEmailInputChange}
-              className={
-                errors.email && errors.email.length > 0 ? "errorInput" : ""
-              }
+              className={`${
+                errors.email && errors.email.length > 0 ? styles.errorInput : ""
+              }`}
             />
             {errors.email && errors.email.length > 0 ? (
-              <p className="error">{errors.email}</p>
+              <p className={styles.error}>{errors.email}</p>
             ) : (
               ""
             )}
@@ -140,15 +142,20 @@ function Register() {
               placeholder="Enter password"
               name="password"
               onChange={handlePasswordInputChange}
-              className={
+              className={`${
                 errors.password && errors.password.length > 0
-                  ? "errorInput"
+                  ? styles.errorInput
                   : ""
-              }
+              }`}
             />
+            {errors.password && errors.password.length > 0 ? (
+              <p className={styles.error}>{errors.password}</p>
+            ) : (
+              ""
+            )}
           </Form.Group>
 
-          <div className="login-button">
+          <div className={styles.loginButton}>
             {!errors.email && !errors.username && !errors.password ? (
               <Button onClick={handleSubmitRegister}>Register</Button>
             ) : (
