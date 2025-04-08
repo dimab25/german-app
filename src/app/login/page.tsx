@@ -114,7 +114,7 @@ function Login() {
           </div>
           <div>
             Don't have an account yet?{" "}
-            <Link className="link-register" href="/register">
+            <Link className={styles.linkText} href="/register">
               Create one here!
             </Link>
           </div>

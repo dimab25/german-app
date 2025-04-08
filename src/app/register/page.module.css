@@ -25,10 +25,10 @@
   justify-content: center;
 }
 
-.link-register {
+.linkText {
   text-decoration: none;
   color: var(--color);
-  transition: color 0.8s ease-in-out;
+
   font-weight: 800;
 }
 

@@ -147,9 +147,10 @@ function Register() {
               <Button disabled>Register</Button>
             )}
           </div>
+
           <div>
             Already have an account?{" "}
-            <Link className="link-register" href="/login">
+            <Link className={styles.linkText} href="/login">
               Sign in!
             </Link>
           </div>
