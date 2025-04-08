@@ -4,11 +4,11 @@ import { Button, Form } from "react-bootstrap";
 
 import { ToastContainer } from "react-toastify";
 import "@/styles/global.css";
-import styles from "./page.module.css";
+import styles from "../register/page.module.css";
 // import "react-toastify/dist/ReactToastify.css";
 // import "../styles/LoginRegister.css";
 
-function Register() {
+function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,29 +88,10 @@ function Register() {
 
   return (
     <>
-      <h1>Register</h1>
+      <h1>Login</h1>
 
       <div className={styles.formContainer}>
         <form className={styles.registerForm}>
-          <Form.Group controlId="username">
-            <Form.Control
-              type="text"
-              placeholder="Enter username"
-              name="username"
-              onChange={handleUsernameInputChange}
-              className={`${
-                errors.username && errors.username.length > 0
-                  ? styles.errorInput
-                  : ""
-              }`}
-            />
-            {errors.username && errors.username.length > 0 ? (
-              <p className={styles.error}>{errors.username}</p>
-            ) : (
-              ""
-            )}
-          </Form.Group>
-
           <Form.Group controlId="email">
             <Form.Control
               type="text"
@@ -149,12 +130,12 @@ function Register() {
 
           <div className={styles.loginButton}>
             {!errors.email && !errors.username && !errors.password ? (
-              <Button>Register</Button>
+              <Button>Login</Button>
             ) : (
-              <Button disabled>Register</Button>
+              <Button disabled>Login</Button>
             )}
           </div>
-          <div>Already have an account? Sign in!</div>
+          <div>Don't have an account yet? Sign up!</div>
         </form>
       </div>
       <ToastContainer />
@@ -162,4 +143,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Login;
