@@ -17,9 +17,7 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/">
                 Home
               </Nav.Link>
-              <Nav.Link as={Link} href="/testpage">
-                Testpage
-              </Nav.Link>
+
               <Nav.Link as={Link} href="/chatbot">
                 Chat
               </Nav.Link>
