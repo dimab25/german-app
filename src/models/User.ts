@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const usersSchema = new mongoose.Schema(
   {
     email: { unique: true, required: true, type: String },
-    name: { required: true, type: String },
+    name: { required: false, type: String },
     password: { required: true, type: String },
 
     imageUrl: { required: false, type: String },
@@ -21,5 +21,5 @@ const usersSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
 );
-const UsersModel = mongoose.model("User", usersSchema);
+const UsersModel =mongoose.models.User || mongoose.model("User", usersSchema);
 export default UsersModel;

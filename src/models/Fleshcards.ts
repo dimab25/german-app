@@ -10,5 +10,5 @@ const flashcardsSchema = new mongoose.Schema(
     },
     { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
   );
-  const FlashcardsModel = mongoose.model("Flashcard", flashcardsSchema);
+  const FlashcardsModel = mongoose.models.Flashcard ||mongoose.model("Flashcard", flashcardsSchema);
   export default FlashcardsModel;

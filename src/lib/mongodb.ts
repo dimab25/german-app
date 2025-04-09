@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 declare global {
   var mongoose: any; // This must be a `var` and not a `let / const`
 }
-console.log("hello");
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -19,15 +19,15 @@ if (!cached) {
 }
 
 async function dbConnect() {
-  console.log("process.env.MONGODB_URI :>> ", process.env.MONGODB_URI);
-  console.log("Attempting to connect to MongoDB...");
+  // console.log("process.env.MONGODB_URI :>> ", process.env.MONGODB_URI);
+  // console.log("Attempting to connect to MongoDB...");
 
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI as string).then((mongoose) => {
       return mongoose;
     });
   }

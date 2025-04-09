@@ -6,6 +6,7 @@ import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form } from "react-bootstrap";
+import { useSession } from "next-auth/react";
 
 export type ChatMessage = {
   role: string;
@@ -13,6 +14,9 @@ export type ChatMessage = {
 };
 
 function NormalChat() {
+   const { status, data, update  } = useSession();
+   console.log('status :>> ', status);
+   console.log('data :>> ', data);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
 
