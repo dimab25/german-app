@@ -7,16 +7,18 @@ import "@/styles/global.css";
 import styles from "../register/page.module.css";
 import Link from "next/link";
 import { validateEmail, validatePassword } from "@/utils/inputValidators";
+import { signIn } from "next-auth/react";
+
 // import "react-toastify/dist/ReactToastify.css";
 // import "../styles/LoginRegister.css";
 
 function Login() {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [error, setError] = useState("");
+
   const [errors, setErrors] = useState({
-    username: "",
     email: "",
     password: "",
   });
@@ -41,34 +43,35 @@ function Login() {
 
       password: validatePassword(e.target.value)
         ? ""
-        : "Password must be at least 6 characters",
+        : "Password must be at least 5 characters",
     });
   };
 
-  //   const handleSubmitRegister = (
-  //     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  //   ) => {
-  //     e.preventDefault();
-  //     if (!validateEmail(email) || !validatePassword(password)) {
-  //       setErrors({
-  //         username: validateUsername(username)
-  //           ? ""
-  //           : "Username must be at least 4 characters",
-  //         email: validateEmail(email) ? "" : "Invalid email format",
-  //         password: validatePassword(password)
-  //           ? ""
-  //           : "Password must be at least 6 characters",
-  //       });
-  //       return;
-  //     }
-  //   };
+  const handleSubmitLogin = async (e) => {
+    e.preventDefault();
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    console.log("res :>> ", res);
+
+    if (res?.ok) {
+      console.log("logged in");
+      // router.push("/testpage");
+      // redirect after login
+    } else {
+      setError("Invalid email or password");
+    }
+  };
 
   return (
     <>
       <h1>Login</h1>
 
       <div className={styles.formContainer}>
-        <form className={styles.registerForm}>
+        <form onSubmit={handleSubmitLogin} className={styles.registerForm}>
           <Form.Group controlId="email">
             <Form.Control
               type="text"
@@ -106,8 +109,8 @@ function Login() {
           </Form.Group>
 
           <div className={styles.loginButton}>
-            {!errors.email && !errors.username && !errors.password ? (
-              <Button>Login</Button>
+            {!errors.email && !errors.password ? (
+              <Button onClick={handleSubmitLogin}>Login</Button>
             ) : (
               <Button disabled>Login</Button>
             )}

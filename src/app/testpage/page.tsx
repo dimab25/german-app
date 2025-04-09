@@ -1,18 +1,17 @@
-"use client"
-import React from 'react'
+"use client";
+import React from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import SignInPage from '../signin';
-import colors from "colors";
+import SignInPage from "../signin";
 
 function testpage() {
-  const { status, data, update  } = useSession();
+  const { status, data, update } = useSession();
   const router = useRouter();
 
-  console.log('status :>> ', status);
-  console.log('data :>> ', data);
-  console.log('update :>> ', update);
+  console.log("status :>> ", status);
+  console.log("data :>> ", data);
+  console.log("update :>> ", update);
   const showSession = () => {
     if (status === "authenticated") {
       return (
@@ -40,14 +39,14 @@ function testpage() {
       );
     }
   };
-  
+
   return (
     <>
-    <div>testpage</div>
-    <SignInPage/>
-    {showSession()}
+      <div>testpage</div>
+      <SignInPage />
+      {showSession()}
     </>
-  )
+  );
 }
 
-export default testpage
+export default testpage;

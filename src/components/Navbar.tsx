@@ -1,9 +1,12 @@
 "use client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
 
 function NavbarElement() {
+  const { status, data, update } = useSession();
+
   return (
     <>
       <Navbar expand="lg" className="bg-body-tertiary">
@@ -25,9 +28,13 @@ function NavbarElement() {
             <Nav>
               {" "}
               <div>
-                <Link href={"/login"}>
-                  <Button>Login</Button>
-                </Link>
+                {status === "authenticated" ? (
+                  <Button>Logout</Button>
+                ) : (
+                  <Link href={"/login"}>
+                    <Button>Login</Button>
+                  </Link>
+                )}
               </div>
             </Nav>
           </Navbar.Collapse>

@@ -1,9 +1,9 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import UsersModel from "@/models/User";
- 
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     CredentialsProvider({
@@ -14,7 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         await dbConnect();
-        console.log("credentilas :>> ", credentials);
+        console.log("credentials :>> ", credentials);
         const user = await UsersModel.findOne({
           email: credentials?.email,
         }).select("+password");
@@ -37,15 +37,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user}) {
-      console.log('token jwttttt :>> ', token);
+    async jwt({ token, user }) {
+      console.log("token jwttttt :>> ", token);
       if (user) token.id = user.id;
       // console.log('user :>> ', user);
-      
+
       return token;
     },
     async session({ session, token }) {
-      session.user.id= token.id;
+      session.user.id = token.id;
       console.log("session :>> ", session);
       console.log("token :>> ", token);
 
@@ -55,4 +55,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // pages: {
   //   signIn: "/auth/signin",
   // },
-})
+});
