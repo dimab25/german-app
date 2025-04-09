@@ -16,6 +16,7 @@ import {
 
 function Register() {
   const [username, setUsername] = useState("");
+  const [userLanguage, setUserLanguage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -35,6 +36,18 @@ function Register() {
         ? ""
         : "Username must be at least 4 characters",
     });
+  };
+
+  const handleUserLanguageInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setUserLanguage(e.target.value);
+    // setErrors({
+    //   ...errors,
+    //   username: validateUsername(e.target.value)
+    //     ? ""
+    //     : "Username must be at least 4 characters",
+    // });
   };
 
   const handleEmailInputChange = (
@@ -59,6 +72,30 @@ function Register() {
         ? ""
         : "Password must be at least 6 characters",
     });
+  };
+
+  const handleSubmitRegister = (e) => {
+    e.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      email: email,
+      password: password,
+      name: username,
+      native_language: userLanguage,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/register", requestOptions)
+      .then((response) => response.json())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
   };
 
   //   const handleSubmitRegister = (
@@ -104,6 +141,15 @@ function Register() {
             )}
           </Form.Group>
 
+          <Form.Group controlId="language">
+            <Form.Control
+              type="text"
+              placeholder="Enter your native language"
+              name="language"
+              onChange={handleUserLanguageInputChange}
+            />
+          </Form.Group>
+
           <Form.Group controlId="email">
             <Form.Control
               type="text"
@@ -142,7 +188,7 @@ function Register() {
 
           <div className={styles.loginButton}>
             {!errors.email && !errors.username && !errors.password ? (
-              <Button>Register</Button>
+              <Button onClick={handleSubmitRegister}>Register</Button>
             ) : (
               <Button disabled>Register</Button>
             )}
