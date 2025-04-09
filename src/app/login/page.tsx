@@ -57,6 +57,10 @@ function Login() {
     });
     console.log("res :>> ", res);
 
+    if (!email || !password) {
+      console.log("data missing");
+    }
+
     if (res?.ok) {
       console.log("logged in");
       // router.push("/testpage");
