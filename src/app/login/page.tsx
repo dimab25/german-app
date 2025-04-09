@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 
 import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@/styles/global.css";
 import styles from "../register/page.module.css";
 import Link from "next/link";
@@ -16,8 +18,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
-
   const [errors, setErrors] = useState({
     email: "",
     password: "",
@@ -26,29 +26,49 @@ function Login() {
   const handleEmailInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setEmail(e.target.value);
+    const value = e.target.value;
+    setEmail(value);
+
     setErrors({
       ...errors,
-
-      email: validateEmail(e.target.value) ? "" : "Invalid email format",
+      email:
+        value.trim() === ""
+          ? ""
+          : validateEmail(value)
+          ? ""
+          : "Invalid email format",
     });
   };
 
   const handlePasswordInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setPassword(e.target.value);
+    const value = e.target.value;
+    setPassword(value);
+
     setErrors({
       ...errors,
-
-      password: validatePassword(e.target.value)
-        ? ""
-        : "Password must be at least 5 characters",
+      password:
+        value.trim() === ""
+          ? ""
+          : validatePassword(value)
+          ? ""
+          : "Password must be at least 6 characters",
     });
   };
 
-  const handleSubmitLogin = async (e) => {
+  const handleSubmitLogin = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      toast.error("All fields are required!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
 
     const res = await signIn("credentials", {
       redirect: false,
@@ -63,17 +83,28 @@ function Login() {
 
     if (res?.error) {
       console.log("Login failed");
-      // router.push("/testpage");
-      // redirect after login
+      toast.error("Login failed. Please try again!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+
+    if (!res?.error) {
+      console.log("Login successfull");
+      toast.success("Login successfull!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      // redirect user to home page
+      return;
     }
   };
 
   return (
     <>
-      <h1>Login</h1>
-
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmitLogin} className={styles.registerForm}>
+        <form className={styles.registerForm}>
+          <h1>Login</h1>
           <Form.Group controlId="email">
             <Form.Control
               type="text"
@@ -110,9 +141,14 @@ function Login() {
             )}
           </Form.Group>
 
-          <div className={styles.loginButton}>
+          <div className={styles.buttonContainer}>
             {!errors.email && !errors.password ? (
-              <Button onClick={handleSubmitLogin}>Login</Button>
+              <Button
+                className={styles.loginButton}
+                onClick={handleSubmitLogin}
+              >
+                Login
+              </Button>
             ) : (
               <Button disabled>Login</Button>
             )}
