@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SignInPage from '../signin';
-
+import colors from "colors";
 
 function testpage() {
   const { status, data, update  } = useSession();
