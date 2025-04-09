@@ -58,15 +58,13 @@ function Login() {
     console.log("res :>> ", res);
 
     if (!email || !password) {
-      console.log("data missing");
+      console.log("email and/or password missing");
     }
 
-    if (res?.ok) {
-      console.log("logged in");
+    if (res?.error) {
+      console.log("Login failed");
       // router.push("/testpage");
       // redirect after login
-    } else {
-      setError("Invalid email or password");
     }
   };
 
