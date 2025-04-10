@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-
 import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import Link from "next/link";
@@ -11,11 +12,11 @@ import {
   validatePassword,
   validateUsername,
 } from "@/utils/inputValidators";
-// import "react-toastify/dist/ReactToastify.css";
-// import "../styles/LoginRegister.css";
+import { useRouter } from "next/navigation";
 
 function Register() {
   const [username, setUsername] = useState("");
+  const [userLanguage, setUserLanguage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,66 +26,136 @@ function Register() {
     password: "",
   });
 
+  const router = useRouter();
+
   const handleUsernameInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setUsername(e.target.value);
+    const value = e.target.value;
+    setUsername(value);
+
+    // trim method checks if the input is empty, removes the error if true
     setErrors({
       ...errors,
-      username: validateUsername(e.target.value)
-        ? ""
-        : "Username must be at least 4 characters",
+      username:
+        value.trim() === ""
+          ? ""
+          : validateUsername(value)
+          ? ""
+          : "Username must be at least 4 characters",
     });
+  };
+
+  const handleUserLanguageInputChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setUserLanguage(e.target.value);
+    // setErrors({
+    //   ...errors,
+    //   username: validateUsername(e.target.value)
+    //     ? ""
+    //     : "Username must be at least 4 characters",
+    // });
   };
 
   const handleEmailInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setEmail(e.target.value);
+    const value = e.target.value;
+    setEmail(value);
+
     setErrors({
       ...errors,
-
-      email: validateEmail(e.target.value) ? "" : "Invalid email format",
+      email:
+        value.trim() === ""
+          ? ""
+          : validateEmail(value)
+          ? ""
+          : "Invalid email format",
     });
   };
 
   const handlePasswordInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setPassword(e.target.value);
+    const value = e.target.value;
+    setPassword(value);
+
     setErrors({
       ...errors,
-
-      password: validatePassword(e.target.value)
-        ? ""
-        : "Password must be at least 6 characters",
+      password:
+        value.trim() === ""
+          ? ""
+          : validatePassword(value)
+          ? ""
+          : "Password must be at least 6 characters",
     });
   };
 
-  //   const handleSubmitRegister = (
-  //     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  //   ) => {
-  //     e.preventDefault();
-  //     if (!validateEmail(email) || !validatePassword(password)) {
-  //       setErrors({
-  //         username: validateUsername(username)
-  //           ? ""
-  //           : "Username must be at least 4 characters",
-  //         email: validateEmail(email) ? "" : "Invalid email format",
-  //         password: validatePassword(password)
-  //           ? ""
-  //           : "Password must be at least 6 characters",
-  //       });
-  //       return;
-  //     }
-  //   };
+  const handleSubmitRegister = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    if (!email || !password || !userLanguage || !username) {
+      toast.error("All fields are required!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      email: email,
+      password: password,
+      name: username,
+      native_language: userLanguage,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    const response = await fetch(
+      "http://localhost:3000/api/register",
+      requestOptions
+    );
+
+    if (!response.ok) {
+      console.log("Error while trying to register new user");
+      toast.error("Registration failed, email already in use. Try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      toast.success(
+        "Registration successful! You'll be redirected in 3 seconds.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      return;
+    }
+  };
 
   return (
     <>
-      <h1>Register</h1>
-
       <div className={styles.formContainer}>
         <form className={styles.registerForm}>
+          <h1>Register</h1>
           <Form.Group controlId="username">
             <Form.Control
               type="text"
@@ -102,6 +173,24 @@ function Register() {
             ) : (
               ""
             )}
+          </Form.Group>
+
+          <Form.Group controlId="language">
+            <Form.Select
+              name="language"
+              onChange={handleUserLanguageInputChange}
+            >
+              <option value="">Select language...</option>
+              <optgroup>
+                <option value="English">English</option>
+                <option value="Turkish">Turkish</option>
+                <option value="Italian">Italian</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="Polish">Polish</option>
+                <option value="Portuguese">Portuguese</option>
+              </optgroup>
+            </Form.Select>
           </Form.Group>
 
           <Form.Group controlId="email">
@@ -140,9 +229,14 @@ function Register() {
             )}
           </Form.Group>
 
-          <div className={styles.loginButton}>
+          <div className={styles.buttonContainer}>
             {!errors.email && !errors.username && !errors.password ? (
-              <Button>Register</Button>
+              <Button
+                className={styles.loginButton}
+                onClick={handleSubmitRegister}
+              >
+                Register
+              </Button>
             ) : (
               <Button disabled>Register</Button>
             )}

@@ -1,74 +1,113 @@
 "use client";
+
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-
 import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@/styles/global.css";
 import styles from "../register/page.module.css";
 import Link from "next/link";
 import { validateEmail, validatePassword } from "@/utils/inputValidators";
-// import "react-toastify/dist/ReactToastify.css";
-// import "../styles/LoginRegister.css";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function Login() {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState({
-    username: "",
     email: "",
     password: "",
   });
 
+  const router = useRouter();
+
   const handleEmailInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setEmail(e.target.value);
+    const value = e.target.value;
+    setEmail(value);
+
     setErrors({
       ...errors,
-
-      email: validateEmail(e.target.value) ? "" : "Invalid email format",
+      email:
+        value.trim() === ""
+          ? ""
+          : validateEmail(value)
+          ? ""
+          : "Invalid email format",
     });
   };
 
   const handlePasswordInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setPassword(e.target.value);
+    const value = e.target.value;
+    setPassword(value);
+
     setErrors({
       ...errors,
-
-      password: validatePassword(e.target.value)
-        ? ""
-        : "Password must be at least 6 characters",
+      password:
+        value.trim() === ""
+          ? ""
+          : validatePassword(value)
+          ? ""
+          : "Password must be at least 6 characters",
     });
   };
 
-  //   const handleSubmitRegister = (
-  //     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  //   ) => {
-  //     e.preventDefault();
-  //     if (!validateEmail(email) || !validatePassword(password)) {
-  //       setErrors({
-  //         username: validateUsername(username)
-  //           ? ""
-  //           : "Username must be at least 4 characters",
-  //         email: validateEmail(email) ? "" : "Invalid email format",
-  //         password: validatePassword(password)
-  //           ? ""
-  //           : "Password must be at least 6 characters",
-  //       });
-  //       return;
-  //     }
-  //   };
+  const handleSubmitLogin = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      toast.error("All fields are required!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    console.log("res :>> ", res);
+
+    if (!email || !password) {
+      console.log("email and/or password missing");
+    }
+
+    if (res?.error) {
+      console.log("Login failed");
+      toast.error("Login failed. Please try again!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (!res?.error) {
+      console.log("Login successfull");
+      toast.success("Login successfull!  You'll be redirected in 3 seconds.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setTimeout(() => {
+        router.push("/");
+      }, 3000);
+      return;
+    }
+  };
 
   return (
     <>
-      <h1>Login</h1>
-
       <div className={styles.formContainer}>
         <form className={styles.registerForm}>
+          <h1>Login</h1>
           <Form.Group controlId="email">
             <Form.Control
               type="text"
@@ -105,9 +144,14 @@ function Login() {
             )}
           </Form.Group>
 
-          <div className={styles.loginButton}>
-            {!errors.email && !errors.username && !errors.password ? (
-              <Button>Login</Button>
+          <div className={styles.buttonContainer}>
+            {!errors.email && !errors.password ? (
+              <Button
+                className={styles.loginButton}
+                onClick={handleSubmitLogin}
+              >
+                Login
+              </Button>
             ) : (
               <Button disabled>Login</Button>
             )}

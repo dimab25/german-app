@@ -6,9 +6,9 @@ const usersSchema = new mongoose.Schema(
     name: { required: false, type: String },
     password: { required: true, type: String },
 
-    imageUrl: { required: false, type: String },
+    image: { required: false, type: String },
 
-    native_language: { required: false, type: String },
+    native_language: { required: true, type: String },
 
     flashcards: [
       {
@@ -21,5 +21,5 @@ const usersSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
 );
-const UsersModel =mongoose.models.User || mongoose.model("User", usersSchema);
+const UsersModel = mongoose.models.User || mongoose.model("User", usersSchema);
 export default UsersModel;
