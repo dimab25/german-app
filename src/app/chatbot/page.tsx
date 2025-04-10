@@ -15,6 +15,7 @@ function NormalChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedWord, setSelectedWord] = useState<string | undefined>("");
+  const [fetchedWord, setFetchedWord] = useState<string | undefined>("");
 
   const handleChat = async () => {
     if (!inputMessage.trim()) {
@@ -75,6 +76,35 @@ function NormalChat() {
     if (text && !text.includes(" ")) {
       setSelectedWord(text);
       console.log(text);
+      fetchWordInfo(text);
+    }
+  };
+
+  const fetchWordInfo = async (text: string) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      word: text,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/gemini-word-info",
+        requestOptions
+      );
+
+      const result = await response.json();
+      console.log(result);
+      setFetchedWord(result.text);
+    } catch (error) {
+      console.log("error");
     }
   };
 
@@ -100,8 +130,8 @@ function NormalChat() {
                     {selectedWord ?? selectedWord}
                   </Popover.Header>
                   <Popover.Body>
-                    <strong>{selectedWord ?? selectedWord}</strong> "is a word
-                    bla bla bla"
+                    <strong>{selectedWord ?? selectedWord}</strong>{" "}
+                    {fetchedWord}
                   </Popover.Body>
                 </Popover>
               }
