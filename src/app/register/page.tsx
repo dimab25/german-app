@@ -12,6 +12,7 @@ import {
   validatePassword,
   validateUsername,
 } from "@/utils/inputValidators";
+import { useRouter } from "next/navigation";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -24,6 +25,8 @@ function Register() {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleUsernameInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -89,7 +92,9 @@ function Register() {
     });
   };
 
-  const handleSubmitRegister = async (e) => {
+  const handleSubmitRegister = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
 
     if (!email || !password || !userLanguage || !username) {
@@ -120,8 +125,30 @@ function Register() {
       requestOptions
     );
 
-    const result = await response.json();
-    console.log(result);
+    if (!response.ok) {
+      console.log("Error while trying to register new user");
+      toast.error("Registration failed, email already in use. Try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      toast.success(
+        "Registration successful! You'll be redirected in 3 seconds.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      return;
+    }
   };
 
   return (
@@ -149,7 +176,6 @@ function Register() {
           </Form.Group>
 
           <Form.Group controlId="language">
-            {/* <Form.Label>Native language</Form.Label> */}
             <Form.Select
               name="language"
               onChange={handleUserLanguageInputChange}

@@ -14,7 +14,8 @@ export async function POST(req: Request, res) {
 
   const existingUser = await UsersModel.findOne({ email: info.email });
 
-  if (existingUser) return Response.json({ error: "User already exists" });
+  if (existingUser)
+    return Response.json({ error: "User already exists" }, { status: 409 });
 
   console.log("password :>> ", info.password);
   const hashedPassword = await bcrypt.hash(info.password, 10);
@@ -26,9 +27,15 @@ export async function POST(req: Request, res) {
       name: info.name,
       native_language: info.native_language,
     });
-    return Response.json({
-      message: "User created",
-      user,
-    });
+
+    if (user) {
+      return Response.json({
+        message: "User created",
+        user,
+      });
+    }
+    if (!user) {
+      return Response.json({ error: "Registration failed" }, { status: 404 });
+    }
   }
 }

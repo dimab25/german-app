@@ -1,7 +1,7 @@
 "use client";
+
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,9 +10,7 @@ import styles from "../register/page.module.css";
 import Link from "next/link";
 import { validateEmail, validatePassword } from "@/utils/inputValidators";
 import { signIn } from "next-auth/react";
-
-// import "react-toastify/dist/ReactToastify.css";
-// import "../styles/LoginRegister.css";
+import { useRouter } from "next/navigation";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -22,6 +20,8 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleEmailInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -87,15 +87,18 @@ function Login() {
         position: "top-right",
         autoClose: 3000,
       });
+      return;
     }
 
     if (!res?.error) {
       console.log("Login successfull");
-      toast.success("Login successfull!", {
+      toast.success("Login successfull!  You'll be redirected in 3 seconds.", {
         position: "top-right",
         autoClose: 3000,
       });
-      // redirect user to home page
+      setTimeout(() => {
+        router.push("/");
+      }, 3000);
       return;
     }
   };

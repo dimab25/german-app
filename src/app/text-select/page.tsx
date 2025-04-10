@@ -2,10 +2,6 @@
 import React, { useEffect } from "react";
 
 function TextSelect() {
-  // add it in a useeffect and clean it up after using it
-  //   document.addEventListener("selectionchange", () => {
-  //     console.log(document.getSelection()?.toString());
-  //   });
   const selectText = () => {
     console.log(document.getSelection()?.toString());
   };
