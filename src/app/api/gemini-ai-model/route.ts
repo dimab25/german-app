@@ -4,8 +4,13 @@ import { GoogleGenAI } from "@google/genai";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const userMessage = body.message;
 
+    // just testing with or operator if there's no message from user
+    const userMessage =
+      body.message ||
+      "You're a german teacher, talk about something related to germany.";
+
+    // message has to be a string otherwise it's invalid
     if (!userMessage || typeof userMessage !== "string") {
       return NextResponse.json(
         { error: "Message is missing or it's invalid" },
@@ -27,7 +32,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ text: response.text });
+    if (response.text) {
+      return NextResponse.json({ text: response.text });
+    }
   } catch (error) {
     console.log("AI model error:", error);
     return NextResponse.json(

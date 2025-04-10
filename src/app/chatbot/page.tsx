@@ -14,11 +14,9 @@ export type ChatMessage = {
 };
 
 function NormalChat() {
-   const { status, data, update  } = useSession();
-   console.log('status :>> ', status);
-   console.log('data :>> ', data);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
+  // const [AIResponse, SetAIResponse] = useState("");
 
   const handleChat = async () => {
     if (!inputMessage.trim()) {
@@ -33,15 +31,31 @@ function NormalChat() {
 
     setInputMessage("");
 
-    // normalChat is the function connecting with the API and it receives the user's message - if it comes back it means that it can only be the response from the AI
-    const chatResult = await normalChat(inputMessage);
-    if (chatResult) {
-      setMessages((prev) => {
-        return [...prev, { role: "assistant", content: chatResult }];
-      });
-    } else {
-      console.error("Chat error:");
-    }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      message: inputMessage,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    const response = await fetch(
+      "http://localhost:3000/api/gemini-ai-model",
+      requestOptions
+    );
+
+    const result = await response.json();
+    // SetAIResponse(result.text);
+
+    const AIMessage: ChatMessage = { content: result.text, role: "assistant" };
+    setMessages((prev) => {
+      return [...prev, AIMessage];
+    });
   };
   const handleClearChat = () => {
     setMessages([]);
