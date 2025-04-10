@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 
 export type ChatMessage = {
   role: string;
@@ -64,6 +64,7 @@ function NormalChat() {
   };
   const handleClearChat = () => {
     setMessages([]);
+    setSelectedWord("");
   };
 
   const selectText = () => {
@@ -89,19 +90,35 @@ function NormalChat() {
       <div className={styles.chatContainer}>
         {messages &&
           messages.map((msg, index) => (
-            <div
+            <OverlayTrigger
+              trigger="click"
               key={index}
-              className={`${styles.singleMessageContainer} ${
-                msg.role === "user" ? styles.userMessage : styles.otherMessage
-              }`}
+              placement="bottom"
+              overlay={
+                <Popover>
+                  <Popover.Header as="h3">
+                    {selectedWord ?? selectedWord}
+                  </Popover.Header>
+                  <Popover.Body>
+                    <strong>{selectedWord ?? selectedWord}</strong> is a word
+                    bla bla bla
+                  </Popover.Body>
+                </Popover>
+              }
             >
-              <strong>
-                {msg.role === "user" ? "You:" : "German teacher:"}
-              </strong>{" "}
-              {msg.content}
-            </div>
+              <div
+                key={index}
+                className={`${styles.singleMessageContainer} ${
+                  msg.role === "user" ? styles.userMessage : styles.otherMessage
+                }`}
+              >
+                <strong>
+                  {msg.role === "user" ? "You:" : "German teacher:"}
+                </strong>{" "}
+                {msg.content}
+              </div>
+            </OverlayTrigger>
           ))}
-        {selectedWord ?? selectedWord}
       </div>
       <div className={styles.inputChatContainer}>
         <Form id="form">
@@ -127,7 +144,12 @@ function NormalChat() {
             ) : (
               <Button disabled>Send</Button>
             )}
-            <Button onClick={handleClearChat}>Clear</Button>
+
+            {messages.length > 1 ? (
+              <Button onClick={handleClearChat}>Clear</Button>
+            ) : (
+              <Button disabled>Clear</Button>
+            )}
           </div>
         </Form>
       </div>
