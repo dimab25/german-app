@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const flashcardsSchema = new mongoose.Schema(
   {
-    backside: { required: true, type: String },
-    frontside: { required: true, type: String },
-    imageUrl: { required: true, type: String },
+    backside: { required: false, type: String },
+    frontside: { required: false, type: String },
+    imageUrl: { required: false, type: String },
     user_id: { required: true, type: String },
   },
   { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
