@@ -1,12 +1,10 @@
 "use client";
 
-import normalChat from "@/actions/chat";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form } from "react-bootstrap";
-import { useSession } from "next-auth/react";
 
 export type ChatMessage = {
   role: string;
@@ -16,7 +14,7 @@ export type ChatMessage = {
 function NormalChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-  // const [AIResponse, SetAIResponse] = useState("");
+  const [selectedWord, setSelectedWord] = useState<string | undefined>("");
 
   const handleChat = async () => {
     if (!inputMessage.trim()) {
@@ -49,17 +47,43 @@ function NormalChat() {
       requestOptions
     );
 
-    const result = await response.json();
-    // SetAIResponse(result.text);
+    if (!response.ok) {
+      console.log("Error getting a response by the AI model");
+    }
 
-    const AIMessage: ChatMessage = { content: result.text, role: "assistant" };
-    setMessages((prev) => {
-      return [...prev, AIMessage];
-    });
+    if (response.ok) {
+      const result = await response.json();
+      const AIMessage: ChatMessage = {
+        content: result.text,
+        role: "assistant",
+      };
+      setMessages((prev) => {
+        return [...prev, AIMessage];
+      });
+    }
   };
   const handleClearChat = () => {
     setMessages([]);
   };
+
+  const selectText = () => {
+    // console.log(document.getSelection()?.toString());
+    const selection = document.getSelection();
+    const text = selection?.toString().trim();
+    // setSelectedWord(document.getSelection()?.toString());
+    if (text && !text.includes(" ")) {
+      setSelectedWord(text);
+      console.log(text);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", selectText);
+    return () => {
+      document.removeEventListener("selectionchange", selectText);
+    };
+  }, []);
+
   return (
     <div>
       <div className={styles.chatContainer}>
@@ -77,6 +101,7 @@ function NormalChat() {
               {msg.content}
             </div>
           ))}
+        {selectedWord ?? selectedWord}
       </div>
       <div className={styles.inputChatContainer}>
         <Form id="form">
@@ -94,6 +119,7 @@ function NormalChat() {
                 value={inputMessage}
               />
             </Form.Group>
+
             {inputMessage.length > 0 ? (
               <Button onClick={handleChat} type="submit">
                 Send
