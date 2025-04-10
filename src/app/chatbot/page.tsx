@@ -100,8 +100,8 @@ function NormalChat() {
                     {selectedWord ?? selectedWord}
                   </Popover.Header>
                   <Popover.Body>
-                    <strong>{selectedWord ?? selectedWord}</strong> is a word
-                    bla bla bla
+                    <strong>{selectedWord ?? selectedWord}</strong> "is a word
+                    bla bla bla"
                   </Popover.Body>
                 </Popover>
               }
@@ -112,9 +112,7 @@ function NormalChat() {
                   msg.role === "user" ? styles.userMessage : styles.otherMessage
                 }`}
               >
-                <strong>
-                  {msg.role === "user" ? "You:" : "German teacher:"}
-                </strong>{" "}
+                <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
                 {msg.content}
               </div>
             </OverlayTrigger>
