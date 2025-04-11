@@ -75,26 +75,31 @@ function NormalChat() {
     setSelectedWord("");
   };
 
-  const handleMessageClick = (msg: ChatMessage) => {
+  const handleTextSelect = (msg: ChatMessage) => {
     console.log(msg);
 
-    if (msg.role === "assistant") {
-      setSelectedSentence(msg.content);
-    }
-  };
-
-  const selectText = () => {
-    // console.log(document.getSelection()?.toString());
     const selection = document.getSelection();
     const text = selection?.toString().trim();
 
-    // setSelectedWord(document.getSelection()?.toString());
-    if (text && selectedSentence && !text.includes(" ")) {
+    if (text && !text.includes(" ") && msg.role === "assistant") {
+      setSelectedSentence(msg.content); // do I need this?
       setSelectedWord(text);
-      console.log(text);
-      fetchWordInfo(text, selectedSentence);
+      fetchWordInfo(text, msg.content);
     }
   };
+
+  // const selectText = async () => {
+  //   // console.log(document.getSelection()?.toString());
+  //   const selection = document.getSelection();
+  //   const text = selection?.toString().trim();
+
+  //   // setSelectedWord(document.getSelection()?.toString());
+  //   if (text && !text.includes(" ")) {
+  //     setSelectedWord(text);
+  //     console.log(text);
+  //     await fetchWordInfo(text);
+  //   }
+  // };
 
   // add the sentence here for context?
   const fetchWordInfo = async (text: string, selectedSentence: string) => {
@@ -126,12 +131,12 @@ function NormalChat() {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("selectionchange", selectText);
-    return () => {
-      document.removeEventListener("selectionchange", selectText);
-    };
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener("selectionchange", selectText);
+  //   return () => {
+  //     document.removeEventListener("selectionchange", selectText);
+  //   };
+  // }, []);
 
   return (
     <div>
@@ -158,7 +163,7 @@ function NormalChat() {
               <div
                 key={index}
                 onClick={() => {
-                  handleMessageClick(msg);
+                  handleTextSelect(msg);
                 }}
                 className={`${styles.singleMessageContainer} ${
                   msg.role === "user" ? styles.userMessage : styles.otherMessage
