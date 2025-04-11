@@ -20,12 +20,15 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+    const prompt = `You are a friendly and engaging German teacher in the form of a chatbot. Your goal is to help the user practice German through natural conversation. Always speak in simple, clear German, and adapt your language slightly to the user’s skill level. Occasionally provide translations or explanations in English only if asked. If you detect any mistakes in the user messages, provide a clear explanation of the mistakes that have been done.`;
+
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: userMessage,
+      contents: [
+        { role: "assistant", parts: [{ text: prompt }] },
+        { role: "user", parts: [{ text: userMessage }] },
+      ],
     });
-
-    // prompt?
 
     if (!response.text) {
       return NextResponse.json(

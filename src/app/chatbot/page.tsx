@@ -80,6 +80,7 @@ function NormalChat() {
     }
   };
 
+  // add the sentence here for context?
   const fetchWordInfo = async (text: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -124,15 +125,14 @@ function NormalChat() {
               trigger="click"
               key={index}
               placement="bottom"
+              rootClose
               overlay={
                 <Popover>
                   <Popover.Header as="h3">
-                    {selectedWord ?? selectedWord}
+                    Word: {selectedWord ?? selectedWord}
                   </Popover.Header>
-                  <Popover.Body>
-                    <strong>{selectedWord ?? selectedWord}</strong>{" "}
-                    {fetchedWord}
-                  </Popover.Body>
+
+                  <Popover.Body>{selectedWord ? fetchedWord : ""}</Popover.Body>
                 </Popover>
               }
             >
