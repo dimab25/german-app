@@ -5,6 +5,7 @@ import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
+import { Chat } from "@google/genai";
 
 export type ChatMessage = {
   role: string;
@@ -15,7 +16,12 @@ function NormalChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedWord, setSelectedWord] = useState<string | undefined>("");
-  const [fetchedWord, setFetchedWord] = useState<string | undefined>("");
+  const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
+    ""
+  );
+  const [selectedSentence, setSelectedSentence] = useState<string | undefined>(
+    ""
+  );
 
   const handleChat = async () => {
     if (!inputMessage.trim()) {
@@ -63,30 +69,41 @@ function NormalChat() {
       });
     }
   };
+
   const handleClearChat = () => {
     setMessages([]);
     setSelectedWord("");
+  };
+
+  const handleMessageClick = (msg: ChatMessage) => {
+    console.log(msg);
+
+    if (msg.role === "assistant") {
+      setSelectedSentence(msg.content);
+    }
   };
 
   const selectText = () => {
     // console.log(document.getSelection()?.toString());
     const selection = document.getSelection();
     const text = selection?.toString().trim();
+
     // setSelectedWord(document.getSelection()?.toString());
-    if (text && !text.includes(" ")) {
+    if (text && selectedSentence && !text.includes(" ")) {
       setSelectedWord(text);
       console.log(text);
-      fetchWordInfo(text);
+      fetchWordInfo(text, selectedSentence);
     }
   };
 
   // add the sentence here for context?
-  const fetchWordInfo = async (text: string) => {
+  const fetchWordInfo = async (text: string, selectedSentence: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
       word: text,
+      selectedSentence,
     });
 
     const requestOptions = {
@@ -103,7 +120,7 @@ function NormalChat() {
 
       const result = await response.json();
       console.log(result);
-      setFetchedWord(result.text);
+      setGeminiDefinition(result.text);
     } catch (error) {
       console.log("error");
     }
@@ -132,12 +149,17 @@ function NormalChat() {
                     Word: {selectedWord ?? selectedWord}
                   </Popover.Header>
 
-                  <Popover.Body>{selectedWord ? fetchedWord : ""}</Popover.Body>
+                  <Popover.Body>
+                    {selectedWord ? geminiDefinition : ""}
+                  </Popover.Body>
                 </Popover>
               }
             >
               <div
                 key={index}
+                onClick={() => {
+                  handleMessageClick(msg);
+                }}
                 className={`${styles.singleMessageContainer} ${
                   msg.role === "user" ? styles.userMessage : styles.otherMessage
                 }`}
