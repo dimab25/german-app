@@ -103,7 +103,7 @@ function NormalChat() {
 
     const raw = JSON.stringify({
       word: text,
-      selectedSentence,
+      selectedSentence: selectedSentence,
     });
 
     const requestOptions = {
