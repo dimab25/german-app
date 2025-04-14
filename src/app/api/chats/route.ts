@@ -25,13 +25,11 @@ export async function POST(req: NextRequest) {
 
     const chatByUser = await ChatsModel.findOne({ user_id });
 
-    const newMessageObject = { user_id, messages };
-
     if (chatByUser) {
       // Append to existing chat
       const newMessage = await ChatsModel.updateOne(
         { user_id },
-        { $push: { messages: newMessageObject } }
+        { $push: { messages: messages } }
       );
 
       if (newMessage) {
@@ -39,8 +37,7 @@ export async function POST(req: NextRequest) {
           {
             success: true,
             message: "Chat successfully saved",
-            newMessage,
-            newMessageObject,
+            messages,
           },
           { status: 201 }
         );
@@ -64,7 +61,7 @@ export async function POST(req: NextRequest) {
           {
             success: true,
             data: newChatRoom,
-            message: "New chat created and message saved",
+            message: "New chat created and messages saved",
           },
           { status: 201 }
         );
