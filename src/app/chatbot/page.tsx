@@ -5,6 +5,7 @@ import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
+import { useSession } from "next-auth/react";
 
 export type ChatMessage = {
   role: string;
@@ -12,8 +13,8 @@ export type ChatMessage = {
 };
 
 function NormalChat() {
-  // const { data } = useSession();
-  // console.log(data);
+  const { data } = useSession();
+  console.log(data);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -113,24 +114,30 @@ function NormalChat() {
     }
   };
 
-  // const handleSaveChat = (e) => {
-  //   e.preventDefault();
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "text/plain");
+  const handleSaveChat = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
 
-  //   const raw = `{"user_id":"${data.user.id}", "role":"user", "content":"${messages}"}`;
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: myHeaders,
-  //     body: raw,
-  //   };
+    const raw = JSON.stringify({
+      user_id: data.user.id,
+      messages: messages,
+    });
 
-  //   fetch("http://localhost:3000/api/chats", requestOptions)
-  //     .then((response) => response.text())
-  //     .then((result) => console.log(result))
-  //     .catch((error) => console.error(error));
-  // };
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/chats", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  };
 
   return (
     <div>
@@ -202,7 +209,7 @@ function NormalChat() {
               <Button disabled>Clear</Button>
             )}
           </div>
-          {/* <button onClick={handleSaveChat}>Save</button> */}
+          <button onClick={handleSaveChat}>Save</button>
         </Form>
       </div>
     </div>
