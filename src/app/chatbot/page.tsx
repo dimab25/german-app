@@ -14,16 +14,13 @@ export type ChatMessage = {
 };
 
 function NormalChat() {
-  const { data } = useSession();
-  console.log(data);
+  // const { data } = useSession();
+  // console.log(data);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedWord, setSelectedWord] = useState<string | undefined>("");
   const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
-    ""
-  );
-  const [selectedSentence, setSelectedSentence] = useState<string | undefined>(
     ""
   );
 
@@ -69,6 +66,8 @@ function NormalChat() {
         role: "assistant",
       };
       setMessages((prev) => {
+        console.log("AIMessage :>> ", AIMessage);
+        console.log("AIMessage :>> ", AIMessage.content.toString());
         return [...prev, AIMessage];
       });
     }
@@ -84,7 +83,6 @@ function NormalChat() {
     const text = selection?.toString().trim();
 
     if (text && !text.includes(" ") && msg.role === "assistant") {
-      setSelectedSentence(msg.content); // do I need this?
       setSelectedWord(text);
       fetchWordInfo(text, msg.content);
     }
@@ -119,24 +117,24 @@ function NormalChat() {
     }
   };
 
-  const handleSaveChat = (e) => {
-    e.preventDefault();
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "text/plain");
+  // const handleSaveChat = (e) => {
+  //   e.preventDefault();
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "text/plain");
 
-    const raw = `{"user_id":"${data.user.id}", "role":"user", "content":"${messages}"}`;
+  //   const raw = `{"user_id":"${data.user.id}", "role":"user", "content":"${messages}"}`;
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: raw,
+  //   };
 
-    fetch("http://localhost:3000/api/chats", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
-  };
+  //   fetch("http://localhost:3000/api/chats", requestOptions)
+  //     .then((response) => response.text())
+  //     .then((result) => console.log(result))
+  //     .catch((error) => console.error(error));
+  // };
 
   return (
     <div>
@@ -208,7 +206,7 @@ function NormalChat() {
               <Button disabled>Clear</Button>
             )}
           </div>
-          <button onClick={handleSaveChat}>Save</button>
+          {/* <button onClick={handleSaveChat}>Save</button> */}
         </Form>
       </div>
     </div>

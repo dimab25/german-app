@@ -32,6 +32,58 @@ export async function GET(
   }
 }
 
+export async function POST(
+  req: NextRequest,
+  context: { params: { id: string } }
+) {
+  await dbConnect();
+  const { id: chatId } = await context.params;
+  try {
+    const { user_id, messages } = await req.json();
+
+    const existingChat = await ChatsModel.findOne({ _id: chatId, user_id });
+
+    if (existingChat) {
+      // Append new messages to existing chat
+      await ChatsModel.updateOne(
+        { _id: chatId },
+        { $push: { messages: { $each: messages } } }
+      );
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Messages added to existing chat",
+          messages,
+        },
+        { status: 200 }
+      );
+    } else {
+      // Create new chat with the given ID
+      const newChat = new ChatsModel({
+        user_id,
+        messages,
+      });
+
+      await newChat.save();
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: newChat,
+          message: "New chat created with messages",
+        },
+        { status: 201 }
+      );
+    }
+  } catch (error) {
+    console.error("POST /api/chats error:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to save chat" },
+      { status: 400 }
+    );
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
   context: { params: { id: string } }
