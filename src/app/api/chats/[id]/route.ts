@@ -4,6 +4,7 @@ import UsersModel from "@/models/User";
 
 import { NextRequest, NextResponse } from "next/server";
 
+// get all users' chats
 export async function GET(
   req: NextRequest,
   context: { params: { id: string } }
@@ -13,7 +14,7 @@ export async function GET(
   const { id } = await context.params;
 
   try {
-    const chats = await ChatsModel.findOne({ user_id: id });
+    const chats = await ChatsModel.find({ user_id: id });
 
     if (!chats) {
       return NextResponse.json(
@@ -22,7 +23,10 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true, data: chats }, { status: 200 });
+    return NextResponse.json(
+      { success: true, amount: chats.length, data: chats },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching chats:", error);
     return NextResponse.json(
@@ -32,6 +36,7 @@ export async function GET(
   }
 }
 
+// add new messages to existing chat - when the user saves a chat for the 2nd time, after adding new messages to it
 export async function POST(
   req: NextRequest,
   context: { params: { id: string } }
@@ -44,7 +49,6 @@ export async function POST(
     const existingChat = await ChatsModel.findOne({ _id: chatId, user_id });
 
     if (existingChat) {
-      // Append new messages to existing chat
       await ChatsModel.updateOne(
         { _id: chatId },
         { $push: { messages: { $each: messages } } }
@@ -56,23 +60,6 @@ export async function POST(
           messages,
         },
         { status: 200 }
-      );
-    } else {
-      // Create new chat with the given ID
-      const newChat = new ChatsModel({
-        user_id,
-        messages,
-      });
-
-      await newChat.save();
-
-      return NextResponse.json(
-        {
-          success: true,
-          data: newChat,
-          message: "New chat created with messages",
-        },
-        { status: 201 }
       );
     }
   } catch (error) {

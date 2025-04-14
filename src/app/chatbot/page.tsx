@@ -5,8 +5,6 @@ import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
-import { Chat } from "@google/genai";
-import { useSession } from "next-auth/react";
 
 export type ChatMessage = {
   role: string;
@@ -66,8 +64,6 @@ function NormalChat() {
         role: "assistant",
       };
       setMessages((prev) => {
-        console.log("AIMessage :>> ", AIMessage);
-        console.log("AIMessage :>> ", AIMessage.content.toString());
         return [...prev, AIMessage];
       });
     }

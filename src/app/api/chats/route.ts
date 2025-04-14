@@ -3,7 +3,7 @@ import ChatsModel from "@/models/Chats";
 import UsersModel from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
-// get all chats
+// get all chats in DB
 export async function GET(req: NextRequest) {
   await dbConnect();
 
@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// create a new chat in DB when the user saves it for the first time
 export async function POST(req: NextRequest) {
   await dbConnect();
 
