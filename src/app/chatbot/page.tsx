@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 import { Chat } from "@google/genai";
+import { useSession } from "next-auth/react";
 
 export type ChatMessage = {
   role: string;
@@ -13,6 +14,9 @@ export type ChatMessage = {
 };
 
 function NormalChat() {
+  const { data } = useSession();
+  console.log(data);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedWord, setSelectedWord] = useState<string | undefined>("");
@@ -76,8 +80,6 @@ function NormalChat() {
   };
 
   const handleTextSelect = (msg: ChatMessage) => {
-    console.log(msg);
-
     const selection = document.getSelection();
     const text = selection?.toString().trim();
 
@@ -88,20 +90,6 @@ function NormalChat() {
     }
   };
 
-  // const selectText = async () => {
-  //   // console.log(document.getSelection()?.toString());
-  //   const selection = document.getSelection();
-  //   const text = selection?.toString().trim();
-
-  //   // setSelectedWord(document.getSelection()?.toString());
-  //   if (text && !text.includes(" ")) {
-  //     setSelectedWord(text);
-  //     console.log(text);
-  //     await fetchWordInfo(text);
-  //   }
-  // };
-
-  // add the sentence here for context?
   const fetchWordInfo = async (text: string, selectedSentence: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -124,19 +112,31 @@ function NormalChat() {
       );
 
       const result = await response.json();
-      console.log(result);
+
       setGeminiDefinition(result.text);
     } catch (error) {
       console.log("error");
     }
   };
 
-  // useEffect(() => {
-  //   document.addEventListener("selectionchange", selectText);
-  //   return () => {
-  //     document.removeEventListener("selectionchange", selectText);
-  //   };
-  // }, []);
+  const handleSaveChat = (e) => {
+    e.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "text/plain");
+
+    const raw = `{"user_id":"${data.user.id}", "role":"user", "content":"${messages}"}`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/chats", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  };
 
   return (
     <div>
@@ -155,7 +155,9 @@ function NormalChat() {
                   </Popover.Header>
 
                   <Popover.Body>
-                    {selectedWord ? geminiDefinition : ""}
+                    {selectedWord
+                      ? geminiDefinition
+                      : "Click on a word to get more information about how it's used"}
                   </Popover.Body>
                 </Popover>
               }
@@ -206,6 +208,7 @@ function NormalChat() {
               <Button disabled>Clear</Button>
             )}
           </div>
+          <button onClick={handleSaveChat}>Save</button>
         </Form>
       </div>
     </div>

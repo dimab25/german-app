@@ -3,7 +3,6 @@ import ChatsModel from "@/models/Chats";
 import UsersModel from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function GET(req: NextRequest) {
   await dbConnect();
 
@@ -11,7 +10,10 @@ export async function GET(req: NextRequest) {
     const chats = await ChatsModel.find({});
     return NextResponse.json({ success: true, data: chats });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Failed to fetch chats" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch chats" },
+      { status: 500 }
+    );
   }
 }
 
@@ -19,11 +21,11 @@ export async function POST(req: NextRequest) {
   await dbConnect();
 
   try {
-    const { user_id, role, content } = await req.json();
+    const { user_id, role, messages } = await req.json();
 
     const chatByUser = await ChatsModel.findOne({ user_id });
 
-    const newMessageObject = { user_id, role, content };
+    const newMessageObject = { user_id, messages };
 
     if (chatByUser) {
       // Append to existing chat
@@ -33,18 +35,21 @@ export async function POST(req: NextRequest) {
       );
 
       if (newMessage) {
-        return NextResponse.json({
-          success: true,
-          message: "Chat successfully saved",
-          newMessage,
-          newMessageObject,
-        }, { status: 201 });
+        return NextResponse.json(
+          {
+            success: true,
+            message: "Chat successfully saved",
+            newMessage,
+            newMessageObject,
+          },
+          { status: 201 }
+        );
       }
     } else {
       // Create new chat
       const newChatByUser = new ChatsModel({
         user_id,
-        messages: [{ role, content }],
+        messages,
       });
 
       const newChatRoom = await newChatByUser.save();
@@ -55,20 +60,26 @@ export async function POST(req: NextRequest) {
           { $push: { chats: newChatRoom._id } }
         );
 
-        return NextResponse.json({
-          success: true,
-          data: newChatRoom,
-          message: "New chat created and message saved",
-        }, { status: 201 });
+        return NextResponse.json(
+          {
+            success: true,
+            data: newChatRoom,
+            message: "New chat created and message saved",
+          },
+          { status: 201 }
+        );
       }
     }
 
-    return NextResponse.json({ success: false, message: "Unknown error" }, { status: 500 });
-
+    return NextResponse.json(
+      { success: false, message: "Unknown error" },
+      { status: 500 }
+    );
   } catch (error) {
     console.error("POST /api/chats error:", error);
-    return NextResponse.json({ success: false, message: "Failed to save chat" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Failed to save chat" },
+      { status: 400 }
+    );
   }
 }
-
-

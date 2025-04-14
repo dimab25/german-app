@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     // persona, task, context, format in the prompt
 
-    const prompt = `Explain the meaning of the German word ${word} in this context: ${sentence} in a really short and simple way. Use 15/20 words.`;
+    const prompt = `Explain in a really short and simple way the meaning of the German word ${word} in this sentence: ${sentence}. Use 15/20 words.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
