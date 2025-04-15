@@ -30,6 +30,7 @@ function NormalChat() {
   const [inputMessage, setInputMessage] = useState("");
 
   const [selectedText, setSelectedText] = useState<string | null>("");
+  const [selectedMessage, setSelectedMessage] = useState<string | null>("");
 
   const [selectionState, setSelectionState] =
     useState<SelectionStates>("not-selecting");
@@ -100,13 +101,13 @@ function NormalChat() {
     setSelectedText("");
   };
 
-  const fetchWordInfo = async (text: string) => {
+  const fetchWordInfo = async (text: string, context: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      word: text,
-      // selectedSentence: selectedSentence,
+      selectedText: text,
+      context: context,
     });
 
     const requestOptions = {
@@ -170,19 +171,33 @@ function NormalChat() {
     if (!currentSelection) return;
 
     //2. grab the text selected
-    const text = currentSelection.toString(); // add trim
+    const text = currentSelection.toString();
 
     if (!text) {
       setSelectionState("not-selecting");
       setSelectedText(null);
+      setSelectedMessage(null);
       return; // this is to avoid grabbing values if we don't have a text selected
     }
+    // Grab full context (message content)
+    const anchorNode = currentSelection.anchorNode;
+    if (anchorNode) {
+      const messageElement = anchorNode.parentElement?.closest(
+        `.${styles.singleMessageContainer}`
+      );
+      if (messageElement) {
+        const fullText = messageElement.textContent || "";
+        setSelectedMessage(fullText.trim());
+      }
+    }
+
     //3. Get the rectangle position
     const selectedTextRectangle = currentSelection
       .getRangeAt(0)
       .getBoundingClientRect();
     //4. setting states
     setSelectedText(text);
+    // setSelectedMessage(fullMessage);
     const halfRectWidth = selectedTextRectangle.width / 2;
     setSelectionPosition({
       x: selectedTextRectangle.left + selectedTextRectangle.width / 2,
@@ -198,10 +213,10 @@ function NormalChat() {
   }
 
   const handleSendToChat = async () => {
-    if (selectedText) {
-      await fetchWordInfo(selectedText);
+    if (selectedText && selectedMessage) {
+      await fetchWordInfo(selectedText, selectedMessage);
+      setShowPopover(true);
     }
-    setShowPopover(true);
   };
 
   useEffect(() => {
