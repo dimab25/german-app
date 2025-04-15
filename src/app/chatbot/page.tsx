@@ -7,7 +7,8 @@ import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
-
+import SidebarChat from "@/components/SidebarChat";
+// import SidebarChat from "@/components/SidebarChat";
 export type ChatMessage = {
   role: string;
   content: string;
@@ -122,7 +123,6 @@ function NormalChat() {
 
       const result = await response.json();
       console.log(result.text);
-
       setGeminiDefinition(result.text);
     } catch (error) {
       console.log("error");
@@ -216,6 +216,7 @@ function NormalChat() {
 
   return (
     <div>
+      <SidebarChat />
       <div className={styles.chatContainer}>
         {messages &&
           messages.map((msg, index) => (
