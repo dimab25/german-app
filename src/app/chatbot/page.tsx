@@ -42,7 +42,10 @@ function NormalChat() {
 
   const tooltipStyle = {
     position: "absolute",
-    transform: `translate3d(${selectionPosition?.x}px, ${selectionPosition?.y}px, 0)`,
+    transform: `translate(-50%, 0)`,
+    left: `${selectionPosition?.x}px`,
+    top: `${selectionPosition?.y}px`,
+    zIndex: 9999,
   };
 
   const handleChat = async () => {
@@ -183,8 +186,12 @@ function NormalChat() {
     setSelectedText(text);
     const halfRectWidth = selectedTextRectangle.width / 2;
     setSelectionPosition({
-      x: selectedTextRectangle.left + halfRectWidth - 40,
-      y: selectedTextRectangle.top + window.scrollY - 30,
+      x: selectedTextRectangle.left + selectedTextRectangle.width / 2,
+      y:
+        selectedTextRectangle.top +
+        selectedTextRectangle.height +
+        window.scrollY +
+        8,
       width: selectedTextRectangle.width,
       height: selectedTextRectangle.height,
     });
