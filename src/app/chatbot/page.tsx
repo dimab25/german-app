@@ -6,6 +6,7 @@ import styles from "./page.module.css";
 import "./page.module.css";
 import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 import { useSession } from "next-auth/react";
+import { FaRobot } from "react-icons/fa";
 
 export type ChatMessage = {
   role: string;
@@ -28,6 +29,7 @@ function NormalChat() {
   const [inputMessage, setInputMessage] = useState("");
 
   const [selectedText, setSelectedText] = useState<string | null>("");
+
   const [selectionState, setSelectionState] =
     useState<SelectionStates>("not-selecting");
   const [selectionPosition, setSelectionPosition] =
@@ -41,7 +43,6 @@ function NormalChat() {
   const tooltipStyle = {
     position: "absolute",
     transform: `translate3d(${selectionPosition?.x}px, ${selectionPosition?.y}px, 0)`,
-    border: "1px solid red",
   };
 
   const handleChat = async () => {
@@ -96,16 +97,6 @@ function NormalChat() {
     setSelectedText("");
   };
 
-  // const handleTextSelect = (msg: ChatMessage) => {
-  //   const selection = document.getSelection();
-  //   const text = selection?.toString().trim();
-
-  //   if (text && !text.includes(" ") && msg.role === "assistant") {
-  //     setSelectedWord(text);
-  //     fetchWordInfo(text, msg.content);
-  //   }
-  // };
-
   const fetchWordInfo = async (text: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -136,33 +127,33 @@ function NormalChat() {
     }
   };
 
-  // const handleSaveChat = async (
-  //   e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  // ) => {
-  //   e.preventDefault();
+  const handleSaveChat = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
 
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "application/json");
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-  //   const raw = JSON.stringify({
-  //     user_id: data.user.id,
-  //     messages: messages,
-  //   });
+    const raw = JSON.stringify({
+      user_id: data.user.id,
+      messages: messages,
+    });
 
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: myHeaders,
-  //     body: raw,
-  //   };
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
 
-  //   const response = await fetch(
-  //     "http://localhost:3000/api/chats",
-  //     requestOptions
-  //   );
+    const response = await fetch(
+      "http://localhost:3000/api/chats",
+      requestOptions
+    );
 
-  //   const result = await response.json();
-  //   console.log(result);
-  // };
+    const result = await response.json();
+    console.log(result);
+  };
 
   function handleSelectionStart() {
     setSelectionState("selecting");
@@ -198,8 +189,6 @@ function NormalChat() {
       height: selectedTextRectangle.height,
     });
     setSelectionState("text-selected");
-    // fetchWordInfo(text);
-    // console.log(text);
   }
 
   const handleSendToChat = async () => {
@@ -226,15 +215,12 @@ function NormalChat() {
           messages.map((msg, index) => (
             <div
               key={index}
-              // onClick={() => {
-              //   handleTextSelect(msg);
-              // }}
               className={`${styles.singleMessageContainer} ${
                 msg.role === "user" ? styles.userMessage : styles.otherMessage
               }`}
             >
               <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
-              {msg.content}
+              <span>{msg.content}</span>
             </div>
           ))}
 
@@ -247,17 +233,16 @@ function NormalChat() {
               <Popover>
                 <Popover.Header as="h3">Word: {selectedText}</Popover.Header>
                 <Popover.Body>
-                  {geminiDefinition
-                    ? geminiDefinition
-                    : "Click on a word to get more information about how it's used."}
+                  {geminiDefinition ?? geminiDefinition}
                 </Popover.Body>
               </Popover>
             }
           >
             <p style={tooltipStyle}>
-              <button onClick={handleSendToChat}>
+              <Button className={styles.buttonAI} onClick={handleSendToChat}>
                 <span>ask AI</span>
-              </button>
+                <FaRobot />
+              </Button>
             </p>
           </OverlayTrigger>
         )}
@@ -293,7 +278,7 @@ function NormalChat() {
               <Button disabled>Clear</Button>
             )}
           </div>
-          {/* <button onClick={handleSaveChat}>Save</button> */}
+          <button onClick={handleSaveChat}>Save</button>
         </Form>
       </div>
     </div>
