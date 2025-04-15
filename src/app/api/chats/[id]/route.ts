@@ -43,8 +43,25 @@ export async function POST(
 ) {
   await dbConnect();
   const { id: chatId } = await context.params;
+  const { user_id, messages } = await req.json();
   try {
-    const { user_id, messages } = await req.json();
+    if (!chatId) {
+      const newChat = new ChatsModel({
+        user_id,
+        messages,
+      });
+
+      await newChat.save();
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: newChat,
+          message: "New chat created",
+        },
+        { status: 201 }
+      );
+    }
 
     const existingChat = await ChatsModel.findOne({ _id: chatId, user_id });
 

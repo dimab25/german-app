@@ -12,16 +12,37 @@ export type ChatMessage = {
   content: string;
 };
 
+type RectangleSelection = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+type SelectionStates = "not-selecting" | "selecting" | "text-selected";
+
 function NormalChat() {
   const { data } = useSession();
-  console.log(data);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [selectedWord, setSelectedWord] = useState<string | undefined>("");
+
+  const [selectedText, setSelectedText] = useState<string | null>("");
+  const [selectionState, setSelectionState] =
+    useState<SelectionStates>("not-selecting");
+  const [selectionPosition, setSelectionPosition] =
+    useState<RectangleSelection>();
+
   const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
     ""
   );
+  const [showPopover, setShowPopover] = useState(false);
+
+  const tooltipStyle = {
+    position: "absolute",
+    transform: `translate3d(${selectionPosition?.x}px, ${selectionPosition?.y}px, 0)`,
+    border: "1px solid red",
+  };
 
   const handleChat = async () => {
     if (!inputMessage.trim()) {
@@ -72,26 +93,26 @@ function NormalChat() {
 
   const handleClearChat = () => {
     setMessages([]);
-    setSelectedWord("");
+    setSelectedText("");
   };
 
-  const handleTextSelect = (msg: ChatMessage) => {
-    const selection = document.getSelection();
-    const text = selection?.toString().trim();
+  // const handleTextSelect = (msg: ChatMessage) => {
+  //   const selection = document.getSelection();
+  //   const text = selection?.toString().trim();
 
-    if (text && !text.includes(" ") && msg.role === "assistant") {
-      setSelectedWord(text);
-      fetchWordInfo(text, msg.content);
-    }
-  };
+  //   if (text && !text.includes(" ") && msg.role === "assistant") {
+  //     setSelectedWord(text);
+  //     fetchWordInfo(text, msg.content);
+  //   }
+  // };
 
-  const fetchWordInfo = async (text: string, selectedSentence: string) => {
+  const fetchWordInfo = async (text: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
       word: text,
-      selectedSentence: selectedSentence,
+      // selectedSentence: selectedSentence,
     });
 
     const requestOptions = {
@@ -107,6 +128,7 @@ function NormalChat() {
       );
 
       const result = await response.json();
+      console.log(result.text);
 
       setGeminiDefinition(result.text);
     } catch (error) {
@@ -114,69 +136,131 @@ function NormalChat() {
     }
   };
 
-  const handleSaveChat = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
+  // const handleSaveChat = async (
+  //   e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  // ) => {
+  //   e.preventDefault();
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({
-      user_id: data.user.id,
-      messages: messages,
+  //   const raw = JSON.stringify({
+  //     user_id: data.user.id,
+  //     messages: messages,
+  //   });
+
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: raw,
+  //   };
+
+  //   const response = await fetch(
+  //     "http://localhost:3000/api/chats",
+  //     requestOptions
+  //   );
+
+  //   const result = await response.json();
+  //   console.log(result);
+  // };
+
+  function handleSelectionStart() {
+    setSelectionState("selecting");
+    setSelectedText(null);
+  }
+
+  function handleSelectionStop() {
+    //1. grab the active selection
+
+    const currentSelection = document.getSelection();
+
+    if (!currentSelection) return;
+
+    //2. grab the text selected
+    const text = currentSelection.toString(); // add trim
+
+    if (!text) {
+      setSelectionState("not-selecting");
+      setSelectedText(null);
+      return; // this is to avoid grabbing values if we don't have a text selected
+    }
+    //3. Get the rectangle position
+    const selectedTextRectangle = currentSelection
+      .getRangeAt(0)
+      .getBoundingClientRect();
+    //4. setting states
+    setSelectedText(text);
+    const halfRectWidth = selectedTextRectangle.width / 2;
+    setSelectionPosition({
+      x: selectedTextRectangle.left + halfRectWidth - 40,
+      y: selectedTextRectangle.top + window.scrollY - 30,
+      width: selectedTextRectangle.width,
+      height: selectedTextRectangle.height,
     });
+    setSelectionState("text-selected");
+    // fetchWordInfo(text);
+    // console.log(text);
+  }
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-
-    fetch("http://localhost:3000/api/chats", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+  const handleSendToChat = async () => {
+    if (selectedText) {
+      await fetchWordInfo(selectedText);
+    }
+    setShowPopover(true);
   };
+
+  useEffect(() => {
+    document.addEventListener("selectstart", handleSelectionStart);
+    document.addEventListener("mouseup", handleSelectionStop);
+
+    return () => {
+      document.removeEventListener("selectstart", handleSelectionStart);
+      document.removeEventListener("mouseup", handleSelectionStop);
+    };
+  }, []);
 
   return (
     <div>
       <div className={styles.chatContainer}>
         {messages &&
           messages.map((msg, index) => (
-            <OverlayTrigger
-              trigger="click"
+            <div
               key={index}
-              placement="bottom"
-              rootClose
-              overlay={
-                <Popover>
-                  <Popover.Header as="h3">
-                    Word: {selectedWord ?? selectedWord}
-                  </Popover.Header>
-
-                  <Popover.Body>
-                    {selectedWord
-                      ? geminiDefinition
-                      : "Click on a word to get more information about how it's used"}
-                  </Popover.Body>
-                </Popover>
-              }
+              // onClick={() => {
+              //   handleTextSelect(msg);
+              // }}
+              className={`${styles.singleMessageContainer} ${
+                msg.role === "user" ? styles.userMessage : styles.otherMessage
+              }`}
             >
-              <div
-                key={index}
-                onClick={() => {
-                  handleTextSelect(msg);
-                }}
-                className={`${styles.singleMessageContainer} ${
-                  msg.role === "user" ? styles.userMessage : styles.otherMessage
-                }`}
-              >
-                <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
-                {msg.content}
-              </div>
-            </OverlayTrigger>
+              <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
+              {msg.content}
+            </div>
           ))}
+
+        {selectedText && selectionPosition && (
+          <OverlayTrigger
+            trigger="click"
+            placement="bottom"
+            rootClose
+            overlay={
+              <Popover>
+                <Popover.Header as="h3">Word: {selectedText}</Popover.Header>
+                <Popover.Body>
+                  {geminiDefinition
+                    ? geminiDefinition
+                    : "Click on a word to get more information about how it's used."}
+                </Popover.Body>
+              </Popover>
+            }
+          >
+            <p style={tooltipStyle}>
+              <button onClick={handleSendToChat}>
+                <span>ask AI</span>
+              </button>
+            </p>
+          </OverlayTrigger>
+        )}
       </div>
       <div className={styles.inputChatContainer}>
         <Form id="form">
@@ -209,7 +293,7 @@ function NormalChat() {
               <Button disabled>Clear</Button>
             )}
           </div>
-          <button onClick={handleSaveChat}>Save</button>
+          {/* <button onClick={handleSaveChat}>Save</button> */}
         </Form>
       </div>
     </div>

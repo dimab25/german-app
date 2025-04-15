@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const word = body.word;
-    const sentence = body.selectedSentence;
+    // const sentence = body.selectedSentence;
 
     // word has to be a string otherwise it's invalid
     if (!word || typeof word !== "string") {
@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
 
     // persona, task, context, format in the prompt
 
-    const prompt = `Explain in a really short and simple way the meaning of the German word ${word} in this sentence: ${sentence}. Use 15/20 words.`;
+    const prompt = `Explain in a really short and simple way the meaning of the German word ${word}. Use 15/20 words.`;
+    //  const prompt = `Explain in a really short and simple way the meaning of the German word ${word} in this sentence: ${sentence}. Use 15/20 words.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
