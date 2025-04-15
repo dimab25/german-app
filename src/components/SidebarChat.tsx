@@ -1,39 +1,57 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
 
+export type ChatType = {
+  created_at: string;
+  messages: MessagesType[];
+  updatedAt: string;
+  user_id: string;
+  _id: string;
+};
+
+export type MessagesType = {
+  content: string;
+  role: string;
+};
+
 function SidebarChat() {
+  const [chats, setChats] = useState<ChatType[] | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  const getUsersChat = () => {
+  const getUsersChat = async () => {
     const requestOptions = {
       method: "GET",
-      redirect: "follow",
     };
 
-    fetch(
+    const response = await fetch(
       "http://localhost:3000/api/chats/67f7823eb57154d33c6dd249",
       requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+    );
+
+    const result = await response.json();
+
+    console.log(result.data);
+    setChats(result.data);
   };
 
+  useEffect(() => {
+    getUsersChat();
+  }, []);
+
   return (
-    <div>
+    <div className="toggle-container">
       <Button className="sidebarToggle" onClick={toggleSidebar}>
-        {sidebarOpen ? "Close Chats" : "Open Chats"}
+        {sidebarOpen ? "Close" : "Chats"}
       </Button>
 
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <h4>Your Saved Chats</h4>
 
         <ul>
-          <li>Chat on April 1</li>
-          <li>Grammar Practice</li>
-          <li>Shopping Advice</li>
+          {chats &&
+            chats.map((chat, index) => <li key={index}>ID: {chat._id}</li>)}
         </ul>
       </div>
     </div>
