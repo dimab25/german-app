@@ -24,6 +24,7 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/flashcards">
                 Flashcards
               </Nav.Link>
+             
             </Nav>
             <Nav>
               {" "}
