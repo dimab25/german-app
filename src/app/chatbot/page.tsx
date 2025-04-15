@@ -41,7 +41,6 @@ function NormalChat() {
   const [showPopover, setShowPopover] = useState(false);
 
   const tooltipStyle = {
-    position: "absolute",
     transform: `translate(-50%, 0)`,
     left: `${selectionPosition?.x}px`,
     top: `${selectionPosition?.y}px`,
@@ -139,7 +138,7 @@ function NormalChat() {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      user_id: data.user.id,
+      user_id: data?.user?.id,
       messages: messages,
     });
 
@@ -245,7 +244,7 @@ function NormalChat() {
               </Popover>
             }
           >
-            <p style={tooltipStyle}>
+            <p className={styles.tooltip} style={tooltipStyle}>
               <Button className={styles.buttonAI} onClick={handleSendToChat}>
                 <span>ask AI</span>
                 <FaRobot />
@@ -284,8 +283,12 @@ function NormalChat() {
             ) : (
               <Button disabled>Clear</Button>
             )}
+            {messages.length > 1 ? (
+              <Button onClick={handleSaveChat}>Save</Button>
+            ) : (
+              <Button disabled>Save</Button>
+            )}
           </div>
-          <button onClick={handleSaveChat}>Save</button>
         </Form>
       </div>
     </div>
