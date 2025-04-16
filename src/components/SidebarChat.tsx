@@ -31,7 +31,7 @@ function SidebarChat() {
     };
 
     const response = await fetch(
-      `http://localhost:3000/api/chats/${userId}`,
+      `http://localhost:3000/api/users/${userId}/chats`,
       requestOptions
     );
 
