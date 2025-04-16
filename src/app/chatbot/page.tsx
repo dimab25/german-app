@@ -14,14 +14,14 @@ export type ChatMessage = {
   content: string;
 };
 
-type RectangleSelection = {
+export type RectangleSelection = {
   x: number;
   y: number;
   width: number;
   height: number;
 };
 
-type SelectionStates = "not-selecting" | "selecting" | "text-selected";
+export type SelectionStates = "not-selecting" | "selecting" | "text-selected";
 
 function NormalChat() {
   const { data } = useSession();
