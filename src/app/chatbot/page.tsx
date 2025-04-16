@@ -24,7 +24,9 @@ export type RectangleSelection = {
 export type SelectionStates = "not-selecting" | "selecting" | "text-selected";
 
 function NormalChat() {
-  const { data } = useSession();
+  const { data, status } = useSession();
+
+  const userId = data?.user?.id;
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -40,6 +42,8 @@ function NormalChat() {
   const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
     ""
   );
+
+  const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
   const [showPopover, setShowPopover] = useState(false);
 
   const tooltipStyle = {
@@ -101,13 +105,18 @@ function NormalChat() {
     setSelectedText("");
   };
 
-  const fetchWordInfo = async (text: string, context: string) => {
+  const fetchWordInfo = async (
+    text: string,
+    context: string,
+    language: string
+  ) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
       selectedText: text,
       context: context,
+      language: language,
     });
 
     const requestOptions = {
@@ -217,11 +226,31 @@ function NormalChat() {
   }
 
   const handleSendToChat = async () => {
-    if (selectedText && selectedMessage) {
-      await fetchWordInfo(selectedText, selectedMessage);
+    if (selectedText && selectedMessage && nativeLanguage) {
+      await fetchWordInfo(selectedText, selectedMessage, nativeLanguage);
       setShowPopover(true);
     }
   };
+
+  const getUserLanguage = async () => {
+    const requestOptions = {
+      method: "GET",
+    };
+
+    const response = await fetch(
+      `http://localhost:3000/api/users/${userId}`,
+      requestOptions
+    );
+    const result = await response.json();
+
+    setNativeLanguage(result.data.native_language);
+  };
+
+  useEffect(() => {
+    if (status === "authenticated" && userId) {
+      getUserLanguage();
+    }
+  }, [status, userId]);
 
   useEffect(() => {
     document.addEventListener("selectstart", handleSelectionStart);

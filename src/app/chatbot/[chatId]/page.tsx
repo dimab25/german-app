@@ -5,13 +5,7 @@ import { ChatMessage, RectangleSelection, SelectionStates } from "../page";
 import { useSession } from "next-auth/react";
 import styles from "../page.module.css";
 
-type ComponentProps = {
-  params: Promise<{ chatId: string }>;
-};
-
-async function SingleChatPage({ params }: ComponentProps) {
-  console.log("params :>> ", await params);
-
+function SingleChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const getSingleChat = async () => {
