@@ -5,17 +5,12 @@
   height: 100%;
   width: 15rem;
   background-color: #1e1e1e;
+
   color: white;
-  transform: translateX(-100%);
-  transition: transform 0.4s ease-in-out;
   z-index: 1000;
   overflow-y: auto;
   padding: 20px;
   opacity: 0.9;
-}
-
-.sidebar.open {
-  transform: translateX(0);
 }
 
 .toggle-container {

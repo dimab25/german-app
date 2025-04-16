@@ -1,6 +1,7 @@
 import React, { use, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
+import { useSession } from "next-auth/react";
 
 export type ChatType = {
   created_at: string;
@@ -16,8 +17,11 @@ export type MessagesType = {
 };
 
 function SidebarChat() {
+  const { data } = useSession();
+  const userId = data?.user?.id;
   const [chats, setChats] = useState<ChatType[] | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const getUsersChat = async () => {
@@ -26,7 +30,7 @@ function SidebarChat() {
     };
 
     const response = await fetch(
-      "http://localhost:3000/api/chats/67f7823eb57154d33c6dd249",
+      `http://localhost:3000/api/chats/${userId}`,
       requestOptions
     );
 
@@ -46,14 +50,16 @@ function SidebarChat() {
         {sidebarOpen ? "Close" : "Chats"}
       </Button>
 
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-        <h4>Your Saved Chats</h4>
+      {sidebarOpen && (
+        <div className="sidebar">
+          <h4>Your Saved Chats</h4>
 
-        <ul>
-          {chats &&
-            chats.map((chat, index) => <li key={index}>ID: {chat._id}</li>)}
-        </ul>
-      </div>
+          <ul>
+            {chats &&
+              chats.map((chat, index) => <li key={index}>ID: {chat._id}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

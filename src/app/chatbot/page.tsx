@@ -8,7 +8,7 @@ import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
 import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
-// import SidebarChat from "@/components/SidebarChat";
+
 export type ChatMessage = {
   role: string;
   content: string;
@@ -179,17 +179,6 @@ function NormalChat() {
       setSelectedMessage(null);
       return; // this is to avoid grabbing values if we don't have a text selected
     }
-    // Grab full context (message content)
-    const anchorNode = currentSelection.anchorNode;
-    if (anchorNode) {
-      const messageElement = anchorNode.parentElement?.closest(
-        `.${styles.singleMessageContainer}`
-      );
-      if (messageElement) {
-        const fullText = messageElement.textContent || "";
-        setSelectedMessage(fullText.trim());
-      }
-    }
 
     //3. Get the rectangle position
     const selectedTextRectangle = currentSelection
@@ -197,7 +186,7 @@ function NormalChat() {
       .getBoundingClientRect();
     //4. setting states
     setSelectedText(text);
-    // setSelectedMessage(fullMessage);
+
     const halfRectWidth = selectedTextRectangle.width / 2;
     setSelectionPosition({
       x: selectedTextRectangle.left + selectedTextRectangle.width / 2,
@@ -210,6 +199,21 @@ function NormalChat() {
       height: selectedTextRectangle.height,
     });
     setSelectionState("text-selected");
+    // 5. grab full context (message content)
+    const anchorNode = currentSelection.anchorNode;
+    // anchordNode referso to the DOM node where the text selection happens
+    if (anchorNode) {
+      // with .parentElement we access the element that holds the text node
+      // .closest looks for the first parent element with the classname of a single chat msg
+      const messageElement = anchorNode.parentElement?.closest(
+        `.${styles.singleMessageContainer}`
+      );
+      if (messageElement) {
+        // once we found the container, we extract the text with textContent
+        const fullText = messageElement.textContent || "";
+        setSelectedMessage(fullText.trim());
+      }
+    }
   }
 
   const handleSendToChat = async () => {
@@ -231,7 +235,7 @@ function NormalChat() {
 
   return (
     <div>
-      <SidebarChat />
+      {data?.user ? <SidebarChat /> : ""}
       <div className={styles.chatContainer}>
         {messages &&
           messages.map((msg, index) => (
