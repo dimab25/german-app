@@ -2,6 +2,7 @@ import React, { use, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export type ChatType = {
   created_at: string;
@@ -56,7 +57,11 @@ function SidebarChat() {
 
           <ul>
             {chats &&
-              chats.map((chat, index) => <li key={index}>ID: {chat._id}</li>)}
+              chats.map((chat, index) => (
+                <Link key={index} href={`chatbot/${chat._id}`}>
+                  <li>ID: {chat._id}</li>
+                </Link>
+              ))}
           </ul>
         </div>
       )}
