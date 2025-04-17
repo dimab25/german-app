@@ -20,7 +20,9 @@ function DisplayFlashcard() {
   console.log("data :>> ", data);
 
   // const [flashcards, setFlashcards] = useState<Flashcard[] | null>(null);
-  const [originalFlashcards, setOriginalFlashcards] = useState<Flashcard[] | null>(null);
+  const [originalFlashcards, setOriginalFlashcards] = useState<
+    Flashcard[] | null
+  >(null);
   const [updatedFlashcard, setUpdatedFlashcard] = useState<Flashcard | null>(
     null
   );
@@ -29,8 +31,7 @@ function DisplayFlashcard() {
   const [show, setShow] = useState(false);
   const [successUpdate, setSuccessUpdate] = useState<boolean | false>(false);
   const [successDelete, setSuccessDelete] = useState<boolean | false>(false);
-  const [newValue, setNewValue] = useState<string|null>(null)
-
+  const [newValue, setNewValue] = useState<string | null>(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -51,18 +52,16 @@ function DisplayFlashcard() {
       console.error(error);
     }
   };
-  
-  const filteredFlashcards = originalFlashcards?.filter(
-    (item) => {
-        console.log('newValue :>> ', newValue);
-        console.log(item.backside, item.level === newValue);
-        if(!newValue) {
-            return true
-        }
-        return item.level === newValue; }
-  );
-  console.log('filteredFlashcards :>> ', filteredFlashcards);
 
+  const filteredFlashcards = originalFlashcards?.filter((item) => {
+    console.log("newValue :>> ", newValue);
+    console.log(item.backside, item.level === newValue);
+    if (!newValue) {
+      return true;
+    }
+    return item.level === newValue;
+  });
+  console.log("filteredFlashcards :>> ", filteredFlashcards);
 
   const handleNext = () => {
     setShowAnswer(false);
@@ -71,12 +70,12 @@ function DisplayFlashcard() {
     }
   };
 
- 
   const handlePrev = () => {
     setShowAnswer(false);
     if (filteredFlashcards) {
       setCurrentIndex(
-        (prev) => (prev - 1 + filteredFlashcards.length) % filteredFlashcards.length
+        (prev) =>
+          (prev - 1 + filteredFlashcards.length) % filteredFlashcards.length
       );
     }
   };
@@ -192,53 +191,81 @@ function DisplayFlashcard() {
     }
   };
 
-const [selectedFilter, setSelectedFilter] = useState<string|"">("")
+  const [selectedFilter, setSelectedFilter] = useState<string | "">("");
   const handleFilter = (e) => {
     e.preventDefault();
-       const choosenValue = e.target.value;
-   setNewValue(choosenValue)
-   setCurrentIndex(0);
-   setSelectedFilter(choosenValue)
-console.log('e :>> ', e);
-    };
+    const choosenValue = e.target.value;
+    setNewValue(choosenValue);
+    setCurrentIndex(0);
+    setSelectedFilter(choosenValue);
+    console.log("e :>> ", e);
+  };
   useEffect(() => {
-    
     getFlashcards();
   }, []);
 
   return (
     <>
-    {/* {console.log('filteredFlashcards :>> ', filteredFlashcards)} */}
+      {/* {console.log('filteredFlashcards :>> ', filteredFlashcards)} */}
       <div className={styles.selectedFilter}>
-        <Button variant="outline-secondary" onClick={handleFilter} value=""  style={{ backgroundColor:  selectedFilter === '' && 'lightblue'  }} >
+        <Button
+          variant="outline-secondary"
+          onClick={handleFilter}
+          value=""
+          style={{ backgroundColor: selectedFilter === "" && "lightblue" }}
+        >
           All
         </Button>
-        <Button variant="outline-secondary" onClick={handleFilter} value="Easy" style={{ backgroundColor: selectedFilter === 'Easy' && 'lightblue' }}  >
+        <Button
+          variant="outline-secondary"
+          onClick={handleFilter}
+          value="Easy"
+          style={{ backgroundColor: selectedFilter === "Easy" && "lightblue" }}
+        >
           Easy
         </Button>
-        <Button variant="outline-secondary" onClick={handleFilter} value="Neutral" style={{ backgroundColor: selectedFilter === 'Neutral' && 'lightblue' }} >
+        <Button
+          variant="outline-secondary"
+          onClick={handleFilter}
+          value="Neutral"
+          style={{
+            backgroundColor: selectedFilter === "Neutral" && "lightblue",
+          }}
+        >
           Neutral
         </Button>
-        <Button variant="outline-secondary" onClick={handleFilter} value="Difficult" style={{ backgroundColor: selectedFilter === 'Difficult' && 'lightblue' }} >
+        <Button
+          variant="outline-secondary"
+          onClick={handleFilter}
+          value="Difficult"
+          style={{
+            backgroundColor: selectedFilter === "Difficult" && "lightblue",
+          }}
+        >
           Difficult
         </Button>
       </div>
-       {filteredFlashcards&& filteredFlashcards?.length> 0 && <p>Count:{currentIndex+1}/{filteredFlashcards.length}</p>}
+      {filteredFlashcards && filteredFlashcards?.length > 0 && (
+        <p>
+          Count:{currentIndex + 1}/{filteredFlashcards.length}
+        </p>
+      )}
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Card style={{ maxWidth: "50rem" }}>
-            {/* {console.log("currentIndex", currentIndex)} */}
-        { filteredFlashcards && filteredFlashcards?.length> 0 ? (
+        <Card style={{ maxWidth: "30rem" }}>
+          {/* {console.log("currentIndex", currentIndex)} */}
+          {filteredFlashcards && filteredFlashcards?.length > 0 ? (
             <Card.Img
               as={CldImage}
-              width="500"
+              width="800"
               height="400"
               src={filteredFlashcards[currentIndex].imageUrl}
               sizes="100vw"
               crop="fill"
               alt="Description of my image"
-
             />
-          ) : <h1 style={{padding:"1rem"}}>Empty Deck</h1>}
+          ) : (
+            <h1 style={{ padding: "1rem" }}>Empty Deck</h1>
+          )}
           {/* {flashcards && flashcards[currentIndex].imageUrl.length > 0 ? (
             <Card.Img
               as={CldImage}
@@ -254,93 +281,105 @@ console.log('e :>> ', e);
           <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
             {/* <Card.Title>Card Title</Card.Title> */}
             <Card.Text>
-              {filteredFlashcards && filteredFlashcards?.length> 0 && filteredFlashcards[currentIndex].frontside}
+              {filteredFlashcards &&
+                filteredFlashcards?.length > 0 &&
+                filteredFlashcards[currentIndex].frontside}
             </Card.Text>
           </Card.Body>
 
-          {showAnswer && filteredFlashcards&& filteredFlashcards?.length> 0 && (
-            <CardFooter>{filteredFlashcards[currentIndex].backside}</CardFooter>
-          ) }
+          {showAnswer &&
+            filteredFlashcards &&
+            filteredFlashcards?.length > 0 && (
+              <CardFooter>
+                {filteredFlashcards[currentIndex].backside}
+              </CardFooter>
+            )}
 
           <CardFooter
             className={styles.CardLevelContainer}
             // style={{ display: "flex", justifyContent: "space-between" }}
           >
-            {filteredFlashcards && filteredFlashcards?.length> 0 &&  filteredFlashcards[currentIndex].level === "Easy" && (
-              <>
-                <Button
-                  variant="outline-secondary"
-                  style={{ background: "lightblue" }}
-                  disabled
-                >
-                  Easy
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Neutral"
-                >
-                  Neutral
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Difficult"
-                >
-                  Difficult
-                </Button>
-              </>
-            )}
-            {filteredFlashcards && filteredFlashcards?.length> 0 &&  filteredFlashcards[currentIndex].level === "Neutral" && (
-              <>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Easy"
-                >
-                  Easy
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  style={{ background: "lightblue" }}
-                  disabled
-                >
-                  Neutral
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Difficult"
-                >
-                  Difficult
-                </Button>
-              </>
-            )}
-            {filteredFlashcards && filteredFlashcards?.length> 0 &&  filteredFlashcards[currentIndex].level === "Difficult" && (
-              <>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Easy"
-                >
-                  Easy
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  onClick={updateCardlevel}
-                  value="Neutral"
-                >
-                  Neutral
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  style={{ background: "lightblue" }}
-                  disabled
-                >
-                  Difficult
-                </Button>
-              </>
-            )}
+            {filteredFlashcards &&
+              filteredFlashcards?.length > 0 &&
+              filteredFlashcards[currentIndex].level === "Easy" && (
+                <>
+                  <Button
+                    variant="outline-secondary"
+                    style={{ background: "lightblue" }}
+                    disabled
+                  >
+                    Easy
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Neutral"
+                  >
+                    Neutral
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Difficult"
+                  >
+                    Difficult
+                  </Button>
+                </>
+              )}
+            {filteredFlashcards &&
+              filteredFlashcards?.length > 0 &&
+              filteredFlashcards[currentIndex].level === "Neutral" && (
+                <>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Easy"
+                  >
+                    Easy
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    style={{ background: "lightblue" }}
+                    disabled
+                  >
+                    Neutral
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Difficult"
+                  >
+                    Difficult
+                  </Button>
+                </>
+              )}
+            {filteredFlashcards &&
+              filteredFlashcards?.length > 0 &&
+              filteredFlashcards[currentIndex].level === "Difficult" && (
+                <>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Easy"
+                  >
+                    Easy
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={updateCardlevel}
+                    value="Neutral"
+                  >
+                    Neutral
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    style={{ background: "lightblue" }}
+                    disabled
+                  >
+                    Difficult
+                  </Button>
+                </>
+              )}
           </CardFooter>
           <CardFooter
             style={{ display: "flex", justifyContent: "space-between" }}
@@ -369,7 +408,9 @@ console.log('e :>> ', e);
                       type="text"
                       name="frontside"
                       placeholder={
-                        filteredFlashcards&& filteredFlashcards?.length> 0 && filteredFlashcards[currentIndex].frontside
+                        filteredFlashcards &&
+                        filteredFlashcards?.length > 0 &&
+                        filteredFlashcards[currentIndex].frontside
                       }
                     />
                   </Form.Group>
@@ -382,7 +423,9 @@ console.log('e :>> ', e);
                       type="text"
                       name="backside"
                       placeholder={
-                        filteredFlashcards && filteredFlashcards?.length> 0 && filteredFlashcards[currentIndex].backside
+                        filteredFlashcards &&
+                        filteredFlashcards?.length > 0 &&
+                        filteredFlashcards[currentIndex].backside
                       }
                     />
                   </Form.Group>

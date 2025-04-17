@@ -14,7 +14,7 @@ function FlashcardDetails() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [successAdded, setSuccessAdded] = useState<boolean | false>(false);
-  const [deck2, setDeck2] = useState<APIOkResponseFlashcards| null>(null);
+  const [deck2, setDeck2] = useState<APIOkResponseFlashcards | null>(null);
   const { data: deck } = useFetchHook<APIOkResponseFlashcards>(
     `http://localhost:3000/api/flashcards/${level}`
   );
@@ -68,27 +68,31 @@ function FlashcardDetails() {
     }
   };
 
-    const deleteFlashcard = async (e: MouseEvent<HTMLButtonElement>) => {
+  const deleteFlashcard = async (e: MouseEvent<HTMLButtonElement>) => {
     try {
-      const matchedItem = deck2 && deck &&
-      deck2.data.find(item =>
-        item.frontside.includes(deck.data[currentIndex].frontside)
-      );
+      const matchedItem =
+        deck2 &&
+        deck &&
+        deck2.data.find((item) =>
+          item.frontside.includes(deck.data[currentIndex].frontside)
+        );
       const matchedId = matchedItem?._id;
 
       const requestOptions: RequestInit = {
         method: "DELETE",
-        redirect: "follow"
+        redirect: "follow",
       };
-      const response = await fetch(`http://localhost:3000/api/flashcards/${matchedId}`, requestOptions);
+      const response = await fetch(
+        `http://localhost:3000/api/flashcards/${matchedId}`,
+        requestOptions
+      );
       const result = await response.json();
-      console.log('result :>> ', result);
+      console.log("result :>> ", result);
       getFlashcardsByUserID();
-       
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const handleNext = () => {
     setShowAnswer(false);
@@ -109,22 +113,18 @@ function FlashcardDetails() {
   console.log("level :>> ", level);
   console.log("successAdded :>> ", successAdded);
 
-
   const exists =
     deck2 &&
     deck &&
     deck2.data.some((item) =>
       item.frontside.includes(deck.data[currentIndex].frontside)
     );
-    
-
 
   console.log("exists :>> ", exists);
 
   useEffect(() => {
     getFlashcardsByUserID();
   }, []);
-
 
   // const imageUrl = getCldImageUrl({
   //   src: '<Your Public ID>',
@@ -137,58 +137,59 @@ function FlashcardDetails() {
   // const dataUrl = `data:${response.type};base64,${base64}`;
 
   return (
-    <>  <div>{level}</div>
-    <div style={{display:"flex", justifyContent:"center"}}>
-    
-      <Card style={{width:"20rem"}}>
-        {/* {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
+    <>
+      {" "}
+      <div>{level}</div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Card style={{ width: "20rem" }}>
+          {/* {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
           <Card.Img
             variant="top"
             src={deck && deck.data[currentIndex].imageUrl}
           />
         ) : null} */}
 
-{deck && deck.data[currentIndex].imageUrl.length > 0 ? 
-          <CldImage 
-          width="500"
-          height="400"
-          src={deck.data[currentIndex].imageUrl}
-          sizes="60vw"
-          crop="fill"
-          alt="Description of my image"
-          placeholder="blur"
-          blurDataURL="https://res.cloudinary.com/dggcfjjc3/image/upload/v1744794727/windmill-7408365_1280_dcdghy.jpg"
-        />:null}
+          {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
+            <Card.Img
+              as={CldImage}
+              width="500"
+              height="400"
+              src={deck.data[currentIndex].imageUrl}
+              sizes="60vw"
+              crop="fill"
+              alt="Description of my image"
+              placeholder="blur"
+              blurDataURL="https://res.cloudinary.com/dggcfjjc3/image/upload/v1744794727/windmill-7408365_1280_dcdghy.jpg"
+            />
+          ) : null}
 
+          <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
+            <Card.Text>{deck && deck.data[currentIndex].frontside}</Card.Text>
+          </Card.Body>
 
-    
-
-        <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
-
-          <Card.Text>{deck && deck.data[currentIndex].frontside}</Card.Text>
-        </Card.Body>
-
-        {showAnswer && deck ? (
-          <CardFooter>{deck.data[currentIndex].backside}</CardFooter>
-        ) : null}
-        <CardFooter
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <Button onClick={handlePrev} variant="outline-secondary">
-            <FaArrowLeft />
-          </Button>{" "}
-          {exists == false ? (
-            <Button onClick={addFlashcard} variant="outline-secondary">
-              +
+          {showAnswer && deck ? (
+            <CardFooter>{deck.data[currentIndex].backside}</CardFooter>
+          ) : null}
+          <CardFooter
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <Button onClick={handlePrev} variant="outline-secondary">
+              <FaArrowLeft />
+            </Button>{" "}
+            {exists == false ? (
+              <Button onClick={addFlashcard} variant="outline-secondary">
+                +
+              </Button>
+            ) : (
+              <Button onClick={deleteFlashcard} variant="outline-secondary">
+                -
+              </Button>
+            )}
+            <Button onClick={handleNext} variant="outline-secondary">
+              <FaArrowRight />
             </Button>
-          ) : (
-            <Button onClick={deleteFlashcard} variant="outline-secondary">-</Button>
-          )}
-          <Button onClick={handleNext} variant="outline-secondary">
-            <FaArrowRight />
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
       </div>
     </>
   );
