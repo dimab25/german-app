@@ -2,6 +2,8 @@
 
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import styles from "../page.module.css";
+import SidebarChat from "@/components/SidebarChat";
 
 type MessagesType = {
   content: string;
@@ -29,13 +31,23 @@ function SingleChatPage() {
 
   return (
     <div>
+      {/* <SidebarChat /> */}
       <h1>This is chat {chatId}</h1>
-      {messages.map((msg, index) => (
-        <div key={index} className={`message ${msg.role}`}>
-          <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
-          <span>{msg.content}</span>
-        </div>
-      ))}
+
+      <div className={styles.chatContainer}>
+        {messages &&
+          messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`${styles.singleMessageContainer} ${
+                msg.role === "user" ? styles.userMessage : styles.otherMessage
+              }`}
+            >
+              <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
+              <span>{msg.content}</span>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }

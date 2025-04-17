@@ -58,8 +58,12 @@ function SidebarChat() {
           <ul>
             {chats &&
               chats.map((chat, index) => (
-                <Link key={index} href={`chatbot/${chat._id}`}>
-                  <li>ID: {chat._id}</li>
+                <Link
+                  className="list-element"
+                  key={index}
+                  href={`chatbot/${chat._id}`}
+                >
+                  <li>Date: {new Date(chat.created_at).toLocaleString()}</li>
                 </Link>
               ))}
           </ul>

@@ -28,10 +28,13 @@
 
 ul {
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-li {
-  padding: 10px;
+.list-element {
+  color: white;
   font-size: smaller;
   text-decoration: none;
 }
