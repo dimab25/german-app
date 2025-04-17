@@ -226,8 +226,9 @@ function NormalChat() {
   }
 
   const handleSendToChat = async () => {
-    if (selectedText && selectedMessage && nativeLanguage) {
-      await fetchWordInfo(selectedText, selectedMessage, nativeLanguage);
+    if (selectedText && selectedMessage) {
+      const language = nativeLanguage || "english";
+      await fetchWordInfo(selectedText, selectedMessage, language);
       setShowPopover(true);
     }
   };

@@ -30,7 +30,7 @@ ul {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 15px;
 }
 
 .list-element {
