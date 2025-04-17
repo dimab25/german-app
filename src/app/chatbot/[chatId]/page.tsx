@@ -12,7 +12,7 @@ type MessagesType = {
 
 function SingleChatPage() {
   const params = useParams();
-  const chatId = params.chatId as string;
+  const chatId = params.chatId;
   const [messages, setMessages] = useState<MessagesType[]>([]);
 
   const getSingleChat = async () => {
@@ -32,7 +32,7 @@ function SingleChatPage() {
   return (
     <div>
       {/* <SidebarChat /> */}
-      <h1>This is chat {chatId}</h1>
+      <h1>Your saved chat</h1>
 
       <div className={styles.chatContainer}>
         {messages &&
