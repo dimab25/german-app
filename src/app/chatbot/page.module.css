@@ -53,6 +53,26 @@
   gap: 15px;
 }
 
+.tooltip {
+  position: absolute;
+}
+.buttonAI {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  background-color: black;
+  border: black 1px solid;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+}
+
+.buttonAI:hover {
+  background-color: black;
+  border: black 1px solid;
+  opacity: 0.75;
+}
+
 @media (max-width: 480px) {
   .chatContainer {
     max-width: 90%;

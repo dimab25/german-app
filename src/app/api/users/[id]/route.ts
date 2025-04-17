@@ -2,6 +2,7 @@ import dbConnect from "@/lib/mongodb";
 import UsersModel from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
+// find single user by ID
 export async function GET(
   req: NextRequest,
   context: { params: { id: string } }
