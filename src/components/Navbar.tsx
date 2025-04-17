@@ -21,6 +21,9 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/chatbot">
                 Chat
               </Nav.Link>
+              <Nav.Link as={Link} href="/dashboard">
+                Dashboard
+              </Nav.Link>
               <Nav.Link as={Link} href="/flashcards">
                 Flashcards
               </Nav.Link>

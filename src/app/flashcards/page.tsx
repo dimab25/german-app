@@ -2,8 +2,6 @@
 import useFetchHook from "@/hooks/useFetchHook";
 import React from "react";
 import { Button, Card } from "react-bootstrap";
-import CreateFlashcard from "@/components/CreateFlashcard";
-import DisplayFlashcard from "@/components/DisplayFlashcard";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import { APIOkResponseFlashcards } from "../../../types/customTypes";
@@ -70,9 +68,9 @@ function Flashcardspage() {
         
       </div>
       <div className={styles.backgroundDiv}>
-        <DisplayFlashcard />
+     
       </div>
-      <CreateFlashcard />
+   
     </>
   );
 }

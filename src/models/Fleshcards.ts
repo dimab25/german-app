@@ -6,6 +6,7 @@ const flashcardsSchema = new mongoose.Schema(
     frontside: { required: false, type: String },
     imageUrl: { required: false, type: String },
     user_id: { required: true, type: String },
+    level: { required: false, type: String },
   },
   { timestamps: { createdAt: "created_at", modifiedAt: "modified_at" } }
 );

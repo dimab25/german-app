@@ -8,6 +8,7 @@ export interface Flashcard {
   backside: string;
   frontside: string;
   imageUrl: string;
+  level?: string;
   user_id: string;
   created_at?: string;
   updatedAt?: string;

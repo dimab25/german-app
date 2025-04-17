@@ -9,7 +9,7 @@ function CreateFlashcard() {
   const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | "">("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [show, setShow] = useState(false);
@@ -75,8 +75,8 @@ function CreateFlashcard() {
       const raw = JSON.stringify({
         backside: newFlashcard?.backside,
         frontside: newFlashcard?.frontside,
-
-        imageUrl: uploadedImageUrl,
+level:"Difficult",
+...(uploadedImageUrl && { imageUrl: uploadedImageUrl }),
         user_id: "67ee55b7fcafbc953cfe0f56",
       });
 

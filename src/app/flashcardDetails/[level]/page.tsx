@@ -6,6 +6,7 @@ import { MouseEvent, useEffect, useState } from "react";
 import { Button, Card, CardFooter } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import { CldImage, getCldImageUrl } from "next-cloudinary";
 
 function FlashcardDetails() {
   const { level } = useParams<{ level: string }>();
@@ -124,19 +125,46 @@ function FlashcardDetails() {
     getFlashcardsByUserID();
   }, []);
 
+
+  // const imageUrl = getCldImageUrl({
+  //   src: '<Your Public ID>',
+  //   width: 100, // Resize the original file to a smaller size
+  // });
+  // const response = await fetch(imageUrl);
+  // const arrayBuffer = await response.arrayBuffer();
+  // const buffer = Buffer.from(arrayBuffer);
+  // const base64 = buffer.toString("base64");
+  // const dataUrl = `data:${response.type};base64,${base64}`;
+
   return (
-    <>
-      <div>{level}</div>
-      <Card style={{ width: "18rem" }}>
-        {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
+    <>  <div>{level}</div>
+    <div style={{display:"flex", justifyContent:"center"}}>
+    
+      <Card style={{width:"20rem"}}>
+        {/* {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
           <Card.Img
             variant="top"
             src={deck && deck.data[currentIndex].imageUrl}
           />
-        ) : null}
+        ) : null} */}
+
+{deck && deck.data[currentIndex].imageUrl.length > 0 ? 
+          <CldImage 
+          width="500"
+          height="400"
+          src={deck.data[currentIndex].imageUrl}
+          sizes="60vw"
+          crop="fill"
+          alt="Description of my image"
+          placeholder="blur"
+          blurDataURL="https://res.cloudinary.com/dggcfjjc3/image/upload/v1744794727/windmill-7408365_1280_dcdghy.jpg"
+        />:null}
+
+
+    
 
         <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
-          {/* <Card.Title>Card Title</Card.Title> */}
+
           <Card.Text>{deck && deck.data[currentIndex].frontside}</Card.Text>
         </Card.Body>
 
@@ -161,6 +189,7 @@ function FlashcardDetails() {
           </Button>
         </CardFooter>
       </Card>
+      </div>
     </>
   );
 }
