@@ -1,0 +1,23 @@
+.CardLevelContainer{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.CardLevelContainer >button {
+    border-radius: 25px;
+width: 30%;
+}
+.selectedFilter>Button {
+    border-radius: 25px;
+    width: 6rem;
+    
+}
+.selectedFilter{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 5px;
+    padding: 0.5rem;
+    color: hwb(0 0% 100% / 0);
+}

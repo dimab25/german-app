@@ -25,11 +25,11 @@ export async function GET(req: NextRequest, context: { params: {id: string } }) 
 export async function PUT(req: NextRequest, context: { params: { id: string } }) {
   await dbConnect();
   const { id } = await context.params;
+  const body = await req.json();
 
   try {
     const updatedFlashcard = await FlashcardsModel.findByIdAndUpdate(
-      id,
-      await req.json(), 
+      id, body , 
       {
         new: true,         
         runValidators: true, 

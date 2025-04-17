@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   await dbConnect();
 
   try {
-    const users = await UsersModel.find({});
+    const users = await UsersModel.find({}).populate({path:"flashcards", select:["backside", "frontside"]}).exec();
     return NextResponse.json({ success: true, data: users });
   } catch (error) {
     return NextResponse.json({ success: false, message: "Failed to fetch users" }, { status: 500 });
