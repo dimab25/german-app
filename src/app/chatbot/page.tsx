@@ -10,6 +10,7 @@ import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
 import { IoIosSettings } from "react-icons/io";
+import TooltipModal from "@/components/TooltipModal";
 
 export type ChatMessage = {
   role: string;
@@ -221,10 +222,6 @@ function NormalChat() {
     setNativeLanguage(result.data.native_language);
   };
 
-  const handleOpenModal = () => {
-    console.log("modal opening");
-  };
-
   useEffect(() => {
     if (status === "authenticated" && userId) {
       getUserLanguage();
@@ -267,12 +264,8 @@ function NormalChat() {
               <Popover>
                 <Popover.Header className={styles.popoverHeader} as="h4">
                   {selectedText}
-                  <Button
-                    onClick={handleOpenModal}
-                    className={styles.popoverButton}
-                  >
-                    <IoIosSettings />
-                  </Button>
+
+                  <TooltipModal />
                 </Popover.Header>
 
                 <Popover.Body>

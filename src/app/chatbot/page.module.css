@@ -79,12 +79,6 @@
   justify-content: space-between;
   align-items: center;
 }
-.popoverButton {
-  font-size: medium;
-  border: solid 1px rgb(168, 168, 168);
-  background-color: inherit;
-  color: black;
-}
 
 .popoverHeader :hover {
   background-color: darkgrey;
