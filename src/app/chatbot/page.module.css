@@ -73,6 +73,24 @@
   opacity: 0.75;
 }
 
+.popoverHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.popoverButton {
+  font-size: medium;
+  border: solid 1px rgb(168, 168, 168);
+  background-color: inherit;
+  color: black;
+}
+
+.popoverHeader :hover {
+  background-color: darkgrey;
+  border: solid 1px rgb(168, 168, 168);
+}
+
 @media (max-width: 480px) {
   .chatContainer {
     max-width: 90%;

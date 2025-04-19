@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
+import { IoIosSettings } from "react-icons/io";
 
 export type ChatMessage = {
   role: string;
@@ -220,6 +221,10 @@ function NormalChat() {
     setNativeLanguage(result.data.native_language);
   };
 
+  const handleOpenModal = () => {
+    console.log("modal opening");
+  };
+
   useEffect(() => {
     if (status === "authenticated" && userId) {
       getUserLanguage();
@@ -260,7 +265,16 @@ function NormalChat() {
             rootClose
             overlay={
               <Popover>
-                <Popover.Header as="h3">Word: {selectedText}</Popover.Header>
+                <Popover.Header className={styles.popoverHeader} as="h4">
+                  {selectedText}
+                  <Button
+                    onClick={handleOpenModal}
+                    className={styles.popoverButton}
+                  >
+                    <IoIosSettings />
+                  </Button>
+                </Popover.Header>
+
                 <Popover.Body>
                   {geminiDefinition ?? geminiDefinition}
                 </Popover.Body>
