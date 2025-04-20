@@ -4,3 +4,8 @@
   background-color: inherit;
   color: black;
 }
+
+.modal-backdrop.blur-backdrop {
+  backdrop-filter: blur(20px);
+  background-color: rgba(0, 0, 0, 0.3);
+}

@@ -16,6 +16,35 @@
   width: 90%;
 }
 
+.clearChatContainer {
+  align-self: flex-end;
+}
+
+.clearButton {
+  background-color: lightgray;
+  color: black;
+  border: transparent;
+}
+
+.clearButton:hover {
+  background-color: lightgray;
+  transform: scale(1.3);
+}
+
+.clearButton:active {
+  background-color: lightgray !important;
+}
+
+.disabled {
+  background-color: lightgray !important;
+  border: transparent !important;
+}
+
+.clearIcon {
+  font-size: x-large;
+  color: black;
+}
+
 .singleMessageContainer {
   max-width: 80%;
   padding: 10px;

@@ -11,6 +11,7 @@ import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
 import { IoIosSettings } from "react-icons/io";
 import TooltipModal from "@/components/TooltipModal";
+import { TiDelete } from "react-icons/ti";
 
 export type ChatMessage = {
   role: string;
@@ -242,6 +243,20 @@ function NormalChat() {
     <div>
       {data?.user ? <SidebarChat /> : ""}
       <div className={styles.chatContainer}>
+        <div className={styles.clearChatContainer}>
+          {messages.length > 1 ? (
+            <Button className={styles.clearButton} onClick={handleClearChat}>
+              <TiDelete className={styles.clearIcon} />
+            </Button>
+          ) : (
+            <Button
+              className={`${styles.clearButton} ${styles.disabled}`}
+              disabled
+            >
+              <TiDelete className={styles.clearIcon} />
+            </Button>
+          )}
+        </div>
         {messages &&
           messages.map((msg, index) => (
             <div
@@ -308,11 +323,6 @@ function NormalChat() {
               <Button disabled>Send</Button>
             )}
 
-            {messages.length > 1 ? (
-              <Button onClick={handleClearChat}>Clear</Button>
-            ) : (
-              <Button disabled>Clear</Button>
-            )}
             {data?.user ? <SaveChatButton messages={messages} /> : ""}
           </div>
         </Form>

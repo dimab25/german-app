@@ -16,9 +16,9 @@ function TooltipModal() {
         <IoIosSettings />
       </Button>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal backdropClassName="blur-backdrop" show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Do you want to create a new flashcard?</Modal.Title>
         </Modal.Header>
         <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
         <Modal.Footer>
