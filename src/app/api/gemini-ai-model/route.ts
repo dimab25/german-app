@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (response.text) {
-      return NextResponse.json({ text: response.text });
+      const chunks = response.text.match(/[^\.!\?]+[\.!\?]+/g) || [
+        response.text,
+      ]; // split into sentence chunks
+      return NextResponse.json({ chunks });
     }
   } catch (error) {
     console.log("AI model error in the gemini-ai-model route:", error);

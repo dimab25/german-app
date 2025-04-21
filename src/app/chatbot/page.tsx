@@ -92,16 +92,36 @@ function NormalChat() {
       console.log("Error getting a response by the AI model");
     }
 
-    if (response.ok) {
-      const result = await response.json();
-      const AIMessage: ChatMessage = {
-        content: result.text,
-        role: "assistant",
-      };
+    const result = await response.json();
+    const chunks: string[] = result.chunks;
+
+    // Initialize empty assistant message
+    let assistantMessage: ChatMessage = { content: "", role: "assistant" };
+    setMessages((prev) => [...prev, assistantMessage]);
+
+    for (let i = 0; i < chunks.length; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 400)); // adding a delay to simulate typing
       setMessages((prev) => {
-        return [...prev, AIMessage];
+        const updatedMessages = [...prev]; // make a copy of the current messages
+        const lastIndex = updatedMessages.length - 1; // index of the last message
+        updatedMessages[lastIndex] = {
+          ...updatedMessages[lastIndex], // this spreads all the existing properties (role, content)
+          content: updatedMessages[lastIndex].content + chunks[i], // adding next chunk to message
+        };
+        return updatedMessages;
       });
     }
+
+    // if (response.ok) {
+    //   const result = await response.json();
+    //   const AIMessage: ChatMessage = {
+    //     content: result.text,
+    //     role: "assistant",
+    //   };
+    //   setMessages((prev) => {
+    //     return [...prev, AIMessage];
+    //   });
+    // }
   };
 
   const handleClearChat = () => {
