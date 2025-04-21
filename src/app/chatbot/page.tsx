@@ -291,7 +291,7 @@ function NormalChat() {
                 <Popover.Header className={styles.popoverHeader} as="h4">
                   {selectedText}
 
-                  <TooltipModal />
+                  <TooltipModal selectedText={selectedText} />
                 </Popover.Header>
 
                 <Popover.Body>

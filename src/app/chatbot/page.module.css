@@ -117,6 +117,9 @@
 .icon {
   font-size: x-large;
 }
+/* button:disabled {
+  font-size: large;
+} */
 
 @media (max-width: 480px) {
   .chatContainer {
