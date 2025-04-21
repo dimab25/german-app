@@ -114,6 +114,10 @@
   border: solid 1px rgb(168, 168, 168);
 }
 
+.icon {
+  font-size: x-large;
+}
+
 @media (max-width: 480px) {
   .chatContainer {
     max-width: 90%;

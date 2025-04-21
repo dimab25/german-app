@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
-import { IoIosSettings } from "react-icons/io";
+import { IoIosSend, IoIosSettings } from "react-icons/io";
 import TooltipModal from "@/components/TooltipModal";
 import { TiDelete } from "react-icons/ti";
 
@@ -92,36 +92,27 @@ function NormalChat() {
       console.log("Error getting a response by the AI model");
     }
 
-    const result = await response.json();
-    const chunks: string[] = result.chunks;
+    if (response.ok) {
+      const result = await response.json();
+      const chunks: string[] = result.chunks;
 
-    // Initialize empty assistant message
-    let assistantMessage: ChatMessage = { content: "", role: "assistant" };
-    setMessages((prev) => [...prev, assistantMessage]);
+      // Initialize empty assistant message
+      let assistantMessage: ChatMessage = { content: "", role: "assistant" };
+      setMessages((prev) => [...prev, assistantMessage]);
 
-    for (let i = 0; i < chunks.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 400)); // adding a delay to simulate typing
-      setMessages((prev) => {
-        const updatedMessages = [...prev]; // make a copy of the current messages
-        const lastIndex = updatedMessages.length - 1; // index of the last message
-        updatedMessages[lastIndex] = {
-          ...updatedMessages[lastIndex], // this spreads all the existing properties (role, content)
-          content: updatedMessages[lastIndex].content + chunks[i], // adding next chunk to message
-        };
-        return updatedMessages;
-      });
+      for (let i = 0; i < chunks.length; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 400)); // adding a delay to simulate typing
+        setMessages((prev) => {
+          const updatedMessages = [...prev]; // make a copy of the current messages
+          const lastIndex = updatedMessages.length - 1; // index of the last message
+          updatedMessages[lastIndex] = {
+            ...updatedMessages[lastIndex], // this spreads all the existing properties (role, content)
+            content: updatedMessages[lastIndex].content + chunks[i], // adding next chunk to message
+          };
+          return updatedMessages;
+        });
+      }
     }
-
-    // if (response.ok) {
-    //   const result = await response.json();
-    //   const AIMessage: ChatMessage = {
-    //     content: result.text,
-    //     role: "assistant",
-    //   };
-    //   setMessages((prev) => {
-    //     return [...prev, AIMessage];
-    //   });
-    // }
   };
 
   const handleClearChat = () => {
@@ -334,13 +325,14 @@ function NormalChat() {
                 value={inputMessage}
               />
             </Form.Group>
-
             {inputMessage.length > 0 ? (
               <Button onClick={handleChat} type="submit">
-                Send
+                <IoIosSend className={styles.icon} />
               </Button>
             ) : (
-              <Button disabled>Send</Button>
+              <Button disabled>
+                <IoIosSend />
+              </Button>
             )}
 
             {data?.user ? <SaveChatButton messages={messages} /> : ""}
