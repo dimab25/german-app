@@ -5,6 +5,7 @@ import "../styles/TooltipModal.css";
 import { IoIosSettings } from "react-icons/io";
 import { Form } from "react-bootstrap";
 import { Flashcard } from "../../types/customTypes";
+import { useSession } from "next-auth/react";
 
 type TooltipModalProps = {
   selectedText: string;
@@ -15,6 +16,8 @@ type TooltipModalProps = {
 function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
   const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const { data } = useSession();
+  const userId = data?.user?.id;
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("e.target.value :>> ", e.target.value);
@@ -30,7 +33,8 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
       const raw = JSON.stringify({
         backside: newFlashcard?.backside,
         frontside: newFlashcard?.frontside,
-        level: "Difficult",
+
+        user_id: userId,
       });
 
       const requestOptions: RequestInit = {

@@ -351,6 +351,8 @@ function NormalChat() {
           </div>
         </Form>
       </div>
+
+      {/* This has to be rendered outside of popover otherwise it will always close when you click on it */}
       <TooltipModal
         selectedText={selectedText || ""}
         show={showFlashcardModal}
