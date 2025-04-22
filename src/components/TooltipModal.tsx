@@ -8,14 +8,11 @@ import { Flashcard } from "../../types/customTypes";
 
 type TooltipModalProps = {
   selectedText: string;
+  show: boolean;
+  onHide: () => void;
 };
 
-function TooltipModal({ selectedText }: TooltipModalProps) {
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
   const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -40,7 +37,6 @@ function TooltipModal({ selectedText }: TooltipModalProps) {
         method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: "follow",
       };
       const response = await fetch(
         "http://localhost:3000/api/flashcards",
@@ -49,7 +45,6 @@ function TooltipModal({ selectedText }: TooltipModalProps) {
       const result = await response.json();
       setSuccess(result.success);
       setTimeout(() => {
-        handleClose();
         setSuccess(false);
       }, 1000);
       console.log("result :>> ", result);
@@ -59,47 +54,41 @@ function TooltipModal({ selectedText }: TooltipModalProps) {
   };
 
   return (
-    <>
-      <Button variant="primary" onClick={handleShow} className="popover-button">
-        <IoIosSettings />
-      </Button>
-
-      <Modal backdropClassName="blur-backdrop" show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Do you want to create a new flashcard?</Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={submitNewFlashcard}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Frontside</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={1}
-              onChange={handleInput}
-              type="text"
-              name="frontside"
-              placeholder={selectedText}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Backside</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={1}
-              onChange={handleInput}
-              type="text"
-              name="backside"
-              placeholder=""
-            />
-          </Form.Group>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button type="submit">Create</Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    </>
+    <Modal backdropClassName="blur-backdrop" show={show} onHide={onHide}>
+      <Modal.Header closeButton>
+        <Modal.Title>Do you want to create a new flashcard?</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={submitNewFlashcard}>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Frontside</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={1}
+            onChange={handleInput}
+            type="text"
+            name="frontside"
+            placeholder={selectedText}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Backside</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={1}
+            onChange={handleInput}
+            type="text"
+            name="backside"
+            placeholder=""
+          />
+        </Form.Group>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onHide}>
+            Close
+          </Button>
+          <Button type="submit">Create</Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 }
 

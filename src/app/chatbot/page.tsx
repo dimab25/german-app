@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
@@ -29,6 +29,7 @@ export type SelectionStates = "not-selecting" | "selecting" | "text-selected";
 
 function NormalChat() {
   const { data, status } = useSession();
+  const tooltipRef = useRef(null);
 
   const userId = data?.user?.id;
 
@@ -49,6 +50,7 @@ function NormalChat() {
 
   const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
   const [showPopover, setShowPopover] = useState(false);
+  const [showFlashcardModal, setShowFlashcardModal] = useState(false);
 
   const tooltipStyle = {
     transform: `translate(-50%, 0)`,
@@ -220,6 +222,11 @@ function NormalChat() {
     }
   };
 
+  const openFlashcardModal = () => {
+    setShowPopover(false); // optionally close popover
+    setShowFlashcardModal(true);
+  };
+
   const getUserLanguage = async () => {
     const requestOptions = {
       method: "GET",
@@ -285,13 +292,18 @@ function NormalChat() {
           <OverlayTrigger
             trigger="click"
             placement="bottom"
-            rootClose
             overlay={
               <Popover>
                 <Popover.Header className={styles.popoverHeader} as="h4">
                   {selectedText}
-
-                  <TooltipModal selectedText={selectedText} />
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={openFlashcardModal}
+                    className={styles.createFlashcardBtn}
+                  >
+                    +
+                  </Button>
                 </Popover.Header>
 
                 <Popover.Body>
@@ -339,6 +351,11 @@ function NormalChat() {
           </div>
         </Form>
       </div>
+      <TooltipModal
+        selectedText={selectedText || ""}
+        show={showFlashcardModal}
+        onHide={() => setShowFlashcardModal(false)}
+      />
     </div>
   );
 }
