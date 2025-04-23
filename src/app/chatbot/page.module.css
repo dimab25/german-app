@@ -126,6 +126,12 @@
   font-size: large;
 } */
 
+.createFlashcardBtn {
+  border-radius: 40%;
+  border: solid 1.5px black;
+  color: black;
+}
+
 @media (max-width: 480px) {
   .chatContainer {
     max-width: 90%;

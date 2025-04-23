@@ -15,23 +15,41 @@ type TooltipModalProps = {
 };
 
 function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
-  const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
   const { data } = useSession();
   const userId = data?.user?.id;
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewFlashcard({ ...newFlashcard!, [e.target.name]: e.target.value });
+  const [formData, setFormData] = useState({
+    frontside: "",
+    backside: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData!, [e.target.name]: e.target.value });
+  };
+
+  const handleCloseModal = () => {
+    onHide();
+    setFormData({ frontside: "", backside: "" });
   };
 
   const submitNewFlashcard = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!formData.backside || !formData.frontside) {
+      toast.error("All fields are required!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "text/plain");
 
       const raw = JSON.stringify({
-        backside: newFlashcard?.backside,
-        frontside: newFlashcard?.frontside,
+        backside: formData?.backside,
+        frontside: formData?.frontside,
 
         user_id: userId,
       });
@@ -66,6 +84,7 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
         setTimeout(() => {
           onHide();
         }, 1000);
+        setFormData({ frontside: "", backside: "" });
 
         return;
       }
@@ -76,7 +95,11 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
 
   return (
     <div>
-      <Modal backdropClassName="blur-backdrop" show={show} onHide={onHide}>
+      <Modal
+        backdropClassName="blur-backdrop"
+        show={show}
+        onHide={handleCloseModal}
+      >
         <Modal.Header closeButton>
           <Modal.Title style={{ textAlign: "center" }}>
             Do you want to create a new flashcard?
@@ -88,7 +111,8 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
             <Form.Control
               as="textarea"
               rows={1}
-              onChange={handleInput}
+              value={formData.frontside}
+              onChange={handleInputChange}
               type="text"
               name="frontside"
               placeholder={selectedText}
@@ -99,7 +123,8 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
             <Form.Control
               as="textarea"
               rows={1}
-              onChange={handleInput}
+              value={formData.backside}
+              onChange={handleInputChange}
               type="text"
               name="backside"
               placeholder="Translation in your language, notes, etc."

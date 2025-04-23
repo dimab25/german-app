@@ -4,7 +4,13 @@ import React, { Suspense, useEffect, useRef, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import "./page.module.css";
-import { Button, Form, OverlayTrigger, Popover } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  OverlayTrigger,
+  Popover,
+  Tooltip,
+} from "react-bootstrap";
 import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
@@ -297,14 +303,19 @@ function NormalChat() {
                 <Popover.Header className={styles.popoverHeader} as="h4">
                   {selectedText}
                   {data?.user ? (
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={openFlashcardModal}
-                      className={styles.createFlashcardBtn}
+                    <OverlayTrigger
+                      overlay={<Tooltip>Create a new flashcard</Tooltip>}
+                      placement="right"
                     >
-                      +
-                    </Button>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={openFlashcardModal}
+                        className={styles.createFlashcardBtn}
+                      >
+                        +
+                      </Button>
+                    </OverlayTrigger>
                   ) : (
                     ""
                   )}
