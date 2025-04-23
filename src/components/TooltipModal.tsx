@@ -6,6 +6,7 @@ import { IoIosSettings } from "react-icons/io";
 import { Form } from "react-bootstrap";
 import { Flashcard } from "../../types/customTypes";
 import { useSession } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
 
 type TooltipModalProps = {
   selectedText: string;
@@ -15,7 +16,6 @@ type TooltipModalProps = {
 
 function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
   const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
   const { data } = useSession();
   const userId = data?.user?.id;
 
@@ -46,52 +46,73 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
         requestOptions
       );
       const result = await response.json();
-      setSuccess(result.success);
-      setTimeout(() => {
-        setSuccess(false);
-      }, 1000);
+
       console.log("result :>> ", result);
+
+      if (!result.success) {
+        console.log("Couldn't create flashcard");
+        toast.error("Couldn't create flashcard. Please try again!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      if (result.success) {
+        toast.success("Flashcard created successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        setTimeout(() => {
+          onHide();
+        }, 1000);
+
+        return;
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <Modal backdropClassName="blur-backdrop" show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <Modal.Title>Do you want to create a new flashcard?</Modal.Title>
-      </Modal.Header>
-      <Form onSubmit={submitNewFlashcard}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Frontside</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={1}
-            onChange={handleInput}
-            type="text"
-            name="frontside"
-            placeholder={selectedText}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Backside</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={1}
-            onChange={handleInput}
-            type="text"
-            name="backside"
-            placeholder=""
-          />
-        </Form.Group>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
-            Close
-          </Button>
-          <Button type="submit">Create</Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+    <div>
+      <Modal backdropClassName="blur-backdrop" show={show} onHide={onHide}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ textAlign: "center" }}>
+            Do you want to create a new flashcard?
+          </Modal.Title>
+        </Modal.Header>
+        <Form style={{ padding: "20px" }} onSubmit={submitNewFlashcard}>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Frontside</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={1}
+              onChange={handleInput}
+              type="text"
+              name="frontside"
+              placeholder={selectedText}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Backside</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={1}
+              onChange={handleInput}
+              type="text"
+              name="backside"
+              placeholder="Translation in your language, notes, etc."
+            />
+          </Form.Group>
+
+          <div className="modal-button-container">
+            <Button type="submit">Create</Button>
+          </div>
+        </Form>
+      </Modal>
+      <ToastContainer />
+    </div>
   );
 }
 
