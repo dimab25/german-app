@@ -20,7 +20,6 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
   const userId = data?.user?.id;
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("e.target.value :>> ", e.target.value);
     setNewFlashcard({ ...newFlashcard!, [e.target.name]: e.target.value });
   };
 

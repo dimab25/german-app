@@ -51,7 +51,7 @@
   border-radius: 10px;
   margin: 5px;
   color: black;
-  outline: 1px grey solid;
+  /* outline: 1px grey solid; */
 }
 
 .inputChatContainer {
@@ -64,11 +64,12 @@
 .userMessage {
   align-self: flex-end;
   background-color: #f1f0f0;
+  outline: 1px grey solid;
 }
 
 .otherMessage {
   align-self: flex-start;
-  background-color: #f1f0f0;
+  /* background-color: #f1f0f0; */
 }
 
 .single-message-container p {
@@ -80,6 +81,10 @@
   flex-direction: row;
   align-items: center;
   gap: 15px;
+}
+
+.sendMessageInput {
+  width: 50vw;
 }
 
 .tooltip {

@@ -296,14 +296,18 @@ function NormalChat() {
               <Popover>
                 <Popover.Header className={styles.popoverHeader} as="h4">
                   {selectedText}
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={openFlashcardModal}
-                    className={styles.createFlashcardBtn}
-                  >
-                    +
-                  </Button>
+                  {data?.user ? (
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={openFlashcardModal}
+                      className={styles.createFlashcardBtn}
+                    >
+                      +
+                    </Button>
+                  ) : (
+                    ""
+                  )}
                 </Popover.Header>
 
                 <Popover.Body>
@@ -326,6 +330,7 @@ function NormalChat() {
           <div className={styles.sendMessageContainer}>
             <Form.Group controlId="message-input">
               <Form.Control
+                className={styles.sendMessageInput}
                 type="text"
                 as="textarea"
                 placeholder="Type a message"
