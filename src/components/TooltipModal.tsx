@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../styles/TooltipModal.css";
@@ -23,11 +23,13 @@ function TooltipModal({
 }: TooltipModalProps) {
   const { data } = useSession();
   const userId = data?.user?.id;
-
+  console.log("%c flashcard modal running", "color:orange");
   const [formData, setFormData] = useState({
     frontside: selectedText,
     backside: geminiDefinition,
   });
+  const frontsideTest = useRef(selectedText);
+  const backsideTest = useRef(geminiDefinition);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData!, [e.target.name]: e.target.value });
@@ -41,7 +43,7 @@ function TooltipModal({
   const submitNewFlashcard = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.backside || !formData.frontside) {
+    if (!formData.backside || !frontsideTest.current) {
       toast.error("All fields are required!", {
         position: "top-right",
         autoClose: 3000,
@@ -55,7 +57,7 @@ function TooltipModal({
 
       const raw = JSON.stringify({
         backside: formData?.backside,
-        frontside: formData?.frontside,
+        frontside: frontsideTest.current,
         level: "Difficult",
         user_id: userId,
       });
@@ -100,13 +102,16 @@ function TooltipModal({
   };
 
   useEffect(() => {
+    console.log("frontsideTest :>> ", frontsideTest.current);
+    console.log("selectedText :>> ", selectedText);
+
     if (show) {
       setFormData({
         frontside: selectedText,
         backside: geminiDefinition,
       });
     }
-  }, [selectedText, geminiDefinition, show]);
+  }, [frontsideTest.current, geminiDefinition, show]);
 
   return (
     <div>
@@ -126,11 +131,11 @@ function TooltipModal({
             <Form.Control
               as="textarea"
               rows={1}
-              value={formData.frontside}
+              value={frontsideTest.current}
               onChange={handleInputChange}
               type="text"
               name="frontside"
-              placeholder={selectedText}
+              placeholder={frontsideTest.current}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">

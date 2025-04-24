@@ -251,8 +251,13 @@ function NormalChat() {
     }
   }, [status, userId]);
 
+  const abortController = new AbortController();
+
   useEffect(() => {
-    document.addEventListener("selectstart", handleSelectionStart);
+    const signal = abortController.signal;
+    document.addEventListener("selectstart", handleSelectionStart, {
+      signal: signal,
+    });
     document.addEventListener("mouseup", handleSelectionStop);
 
     return () => {
@@ -264,14 +269,24 @@ function NormalChat() {
   return (
     <div>
       <div className={styles.topButtonsContainer}>
-        {data?.user ? <SidebarChat /> : ""}
+        {data?.user ? (
+          <SidebarChat
+            handleSelectionStart={handleSelectionStart}
+            abortController={abortController}
+          />
+        ) : (
+          ""
+        )}
 
         {messages.length > 1 ? (
-          <Button onClick={handleClearChat}>
-            <TiDelete />
+          <Button className={styles.clearButton} onClick={handleClearChat}>
+            <TiDelete className={styles.clearIcon} />
           </Button>
         ) : (
-          <Button disabled>
+          <Button
+            className={`${styles.clearButton} ${styles.disabled}`}
+            disabled
+          >
             <TiDelete className={styles.clearIcon} />
           </Button>
         )}
@@ -361,6 +376,11 @@ function NormalChat() {
                 autoComplete="off"
                 autoCorrect="on"
                 onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleChat();
+                  }
+                }}
                 value={inputMessage}
               />
             </Form.Group>
@@ -380,12 +400,14 @@ function NormalChat() {
       </div>
 
       {/* This has to be rendered outside of popover otherwise it will always close when you click on it */}
-      <TooltipModal
-        selectedText={selectedText || ""}
-        geminiDefinition={geminiDefinition || ""}
-        show={showFlashcardModal}
-        onHide={() => setShowFlashcardModal(false)}
-      />
+      {geminiDefinition && (
+        <TooltipModal
+          selectedText={selectedText || ""}
+          geminiDefinition={geminiDefinition || ""}
+          show={showFlashcardModal}
+          onHide={() => setShowFlashcardModal(false)}
+        />
+      )}
     </div>
   );
 }
