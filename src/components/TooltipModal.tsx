@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../styles/TooltipModal.css";
@@ -10,17 +10,25 @@ import { toast, ToastContainer } from "react-toastify";
 
 type TooltipModalProps = {
   selectedText: string;
+  geminiDefinition: string;
   show: boolean;
   onHide: () => void;
 };
 
-function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
+function TooltipModal({
+  selectedText,
+  geminiDefinition,
+  show,
+  onHide,
+}: TooltipModalProps) {
   const { data } = useSession();
   const userId = data?.user?.id;
 
+  const frontside = selectedText;
+
   const [formData, setFormData] = useState({
-    frontside: "",
-    backside: "",
+    frontside: frontside,
+    backside: geminiDefinition,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,6 +101,15 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
     }
   };
 
+  useEffect(() => {
+    if (show) {
+      setFormData({
+        frontside: selectedText,
+        backside: geminiDefinition,
+      });
+    }
+  }, [selectedText, geminiDefinition, show]);
+
   return (
     <div>
       <Modal
@@ -127,7 +144,7 @@ function TooltipModal({ selectedText, show, onHide }: TooltipModalProps) {
               onChange={handleInputChange}
               type="text"
               name="backside"
-              placeholder="Translation in your language, notes, etc."
+              placeholder={geminiDefinition}
             />
           </Form.Group>
 

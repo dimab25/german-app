@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-    const prompt = `Explain in ${language} in a really short and simple way the meaning of the German words ${selectedText} in this sentence: ${context}. Use 15/20 words.`;
+    // const prompt = `Explain in ${language} in a really short and simple way the meaning of the German words ${selectedText} in this sentence: ${context}. Use 15/20 words.`;
+
+    const prompt = `In ${language}, briefly (15–20 words) explain the meaning of the German phrase “${selectedText}” from this sentence: “${context}”.
+Begin with a direct translation in ${language}, then give simple context. Avoid mentioning the explanation is AI-generated.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",

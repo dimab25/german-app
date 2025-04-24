@@ -109,7 +109,7 @@ function NormalChat() {
       setMessages((prev) => [...prev, assistantMessage]);
 
       for (let i = 0; i < chunks.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 400)); // adding a delay to simulate typing
+        await new Promise((resolve) => setTimeout(resolve, 500)); // adding a delay to simulate typing
         setMessages((prev) => {
           const updatedMessages = [...prev]; // make a copy of the current messages
           const lastIndex = updatedMessages.length - 1; // index of the last message
@@ -371,6 +371,7 @@ function NormalChat() {
       {/* This has to be rendered outside of popover otherwise it will always close when you click on it */}
       <TooltipModal
         selectedText={selectedText || ""}
+        geminiDefinition={geminiDefinition || ""}
         show={showFlashcardModal}
         onHide={() => setShowFlashcardModal(false)}
       />
