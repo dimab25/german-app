@@ -3,7 +3,6 @@
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import "@/styles/global.css";
 import styles from "./page.module.css";
-import "./page.module.css";
 import {
   Button,
   Form,
@@ -191,7 +190,6 @@ function NormalChat() {
     //4. setting states
     setSelectedText(text);
 
-    const halfRectWidth = selectedTextRectangle.width / 2;
     setSelectionPosition({
       x: selectedTextRectangle.left + selectedTextRectangle.width / 2,
       y:
@@ -265,10 +263,23 @@ function NormalChat() {
 
   return (
     <div>
-      {data?.user ? <SidebarChat /> : ""}
+      <div className={styles.topButtonsContainer}>
+        {data?.user ? <SidebarChat /> : ""}
+
+        {messages.length > 1 ? (
+          <Button onClick={handleClearChat}>
+            <TiDelete />
+          </Button>
+        ) : (
+          <Button disabled>
+            <TiDelete className={styles.clearIcon} />
+          </Button>
+        )}
+      </div>
+      {/* {data?.user ? <SidebarChat /> : ""} */}
       <div className={styles.chatContainer}>
         <div className={styles.clearChatContainer}>
-          {messages.length > 1 ? (
+          {/* {messages.length > 1 ? (
             <Button className={styles.clearButton} onClick={handleClearChat}>
               <TiDelete className={styles.clearIcon} />
             </Button>
@@ -279,7 +290,7 @@ function NormalChat() {
             >
               <TiDelete className={styles.clearIcon} />
             </Button>
-          )}
+          )} */}
         </div>
         {messages &&
           messages.map((msg, index) => (

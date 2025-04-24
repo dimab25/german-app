@@ -24,10 +24,8 @@ function TooltipModal({
   const { data } = useSession();
   const userId = data?.user?.id;
 
-  const frontside = selectedText;
-
   const [formData, setFormData] = useState({
-    frontside: frontside,
+    frontside: selectedText,
     backside: geminiDefinition,
   });
 
@@ -58,7 +56,7 @@ function TooltipModal({
       const raw = JSON.stringify({
         backside: formData?.backside,
         frontside: formData?.frontside,
-
+        level: "Difficult",
         user_id: userId,
       });
 

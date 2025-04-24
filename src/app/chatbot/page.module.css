@@ -1,6 +1,6 @@
 .chatContainer {
   align-items: flex-start;
-  background-color: lightgray;
+  background-color: rgb(255, 255, 255);
 
   display: flex;
   flex-direction: column;
@@ -14,6 +14,14 @@
   padding: 15px;
   text-align: left;
   width: 90%;
+}
+
+.topButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
 }
 
 .clearChatContainer {
@@ -64,12 +72,13 @@
 .userMessage {
   align-self: flex-end;
   background-color: #f1f0f0;
-  outline: 1px grey solid;
+  outline: 1px rgb(128, 128, 128) solid;
 }
 
 .otherMessage {
   align-self: flex-start;
-  /* background-color: #f1f0f0; */
+  background-color: #f1f0f0;
+  outline: 1px grey solid;
 }
 
 .single-message-container p {

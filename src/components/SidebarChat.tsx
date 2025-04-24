@@ -46,7 +46,7 @@ function SidebarChat() {
   }, []);
 
   return (
-    <div className="toggle-container">
+    <div className="sidebar-wrapper">
       <Button className="sidebarToggle" onClick={toggleSidebar}>
         {sidebarOpen ? "Close" : "Chats"}
       </Button>
@@ -54,7 +54,6 @@ function SidebarChat() {
       {sidebarOpen && (
         <div className="sidebar">
           <h4>Your Saved Chats</h4>
-
           <ul>
             {chats &&
               chats.map((chat, index) => (
