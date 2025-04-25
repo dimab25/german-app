@@ -1,18 +1,41 @@
 .chatContainer {
-  align-items: flex-start;
-  background-color: rgb(255, 255, 255);
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin: auto;
-  margin-top: 20px;
-  max-height: 500px;
-  min-height: 300px;
-  outline: solid black 2px;
+  gap: 12px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  height: 400px;
   overflow-y: auto;
-  padding: 15px;
-  text-align: left;
   width: 90%;
+  margin: 20px auto 0 auto;
+}
+
+.singleMessageContainer {
+  display: inline-block;
+  max-width: 70%;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  border-radius: 20px;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.userMessage {
+  align-self: flex-end;
+  background-color: #d1e7dd;
+  color: black;
+  border-top-right-radius: 0;
+}
+
+.otherMessage {
+  align-self: flex-start;
+  background-color: #ffffff;
+  color: black;
+  border-top-left-radius: 0;
 }
 
 .topButtonsContainer {
@@ -48,21 +71,8 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.clearButton:active {
-  background-color: lightgray !important;
-}
-
 .clearIcon {
   font-size: x-large;
-}
-
-.singleMessageContainer {
-  max-width: 80%;
-  padding: 10px;
-  border-radius: 10px;
-  margin: 5px;
-  color: black;
-  /* outline: 1px grey solid; */
 }
 
 .inputChatContainer {
@@ -70,18 +80,6 @@
   flex-direction: row;
   justify-content: center;
   padding: 20px;
-}
-
-.userMessage {
-  align-self: flex-end;
-  background-color: #f1f0f0;
-  outline: 1px rgb(128, 128, 128) solid;
-}
-
-.otherMessage {
-  align-self: flex-start;
-  background-color: #f1f0f0;
-  outline: 1px grey solid;
 }
 
 .single-message-container p {
@@ -134,9 +132,6 @@
 .icon {
   font-size: x-large;
 }
-/* button:disabled {
-  font-size: large;
-} */
 
 .createFlashcardBtn {
   border-radius: 40%;

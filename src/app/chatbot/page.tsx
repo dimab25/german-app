@@ -38,7 +38,12 @@ function NormalChat() {
 
   const userId = data?.user?.id;
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      role: "assistant",
+      content: "Hi there! 👋 Type a message to get started.",
+    },
+  ]);
   const [inputMessage, setInputMessage] = useState("");
 
   const [selectedText, setSelectedText] = useState<string | null>("");
@@ -57,6 +62,15 @@ function NormalChat() {
   const [showPopover, setShowPopover] = useState(false);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const tooltipStyle = {
     transform: `translate(-50%, 0)`,
     left: `${selectionPosition?.x}px`,
@@ -69,12 +83,8 @@ function NormalChat() {
       console.log("type a message first");
       return;
     }
-    // creating user's message object and including it into the array of messages
     const userMessage: ChatMessage = { content: inputMessage, role: "user" };
-    setMessages((prev) => {
-      return [...prev, userMessage];
-    });
-
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
 
     const myHeaders = new Headers();
@@ -103,18 +113,17 @@ function NormalChat() {
       const result = await response.json();
       const chunks: string[] = result.chunks;
 
-      // Initialize empty assistant message
       let assistantMessage: ChatMessage = { content: "", role: "assistant" };
       setMessages((prev) => [...prev, assistantMessage]);
 
       for (let i = 0; i < chunks.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 500)); // adding a delay to simulate typing
+        await new Promise((resolve) => setTimeout(resolve, 500));
         setMessages((prev) => {
-          const updatedMessages = [...prev]; // make a copy of the current messages
-          const lastIndex = updatedMessages.length - 1; // index of the last message
+          const updatedMessages = [...prev];
+          const lastIndex = updatedMessages.length - 1;
           updatedMessages[lastIndex] = {
-            ...updatedMessages[lastIndex], // this spreads all the existing properties (role, content)
-            content: updatedMessages[lastIndex].content + chunks[i], // adding next chunk to message
+            ...updatedMessages[lastIndex],
+            content: updatedMessages[lastIndex].content + chunks[i],
           };
           return updatedMessages;
         });
@@ -123,7 +132,12 @@ function NormalChat() {
   };
 
   const handleClearChat = () => {
-    setMessages([]);
+    setMessages([
+      {
+        role: "assistant",
+        content: "Hi there! 👋 Type a message to get started.",
+      },
+    ]);
     setSelectedText("");
   };
 
@@ -167,27 +181,22 @@ function NormalChat() {
   }
 
   function handleSelectionStop() {
-    //1. grab the active selection
-
     const currentSelection = document.getSelection();
-
     if (!currentSelection) return;
 
-    //2. grab the text selected
     const text = currentSelection.toString();
 
     if (!text) {
       setSelectionState("not-selecting");
       setSelectedText(null);
       setSelectedMessage(null);
-      return; // this is to avoid grabbing values if we don't have a text selected
+      return;
     }
 
-    //3. Get the rectangle position
     const selectedTextRectangle = currentSelection
       .getRangeAt(0)
       .getBoundingClientRect();
-    //4. setting states
+
     setSelectedText(text);
 
     setSelectionPosition({
@@ -201,17 +210,13 @@ function NormalChat() {
       height: selectedTextRectangle.height,
     });
     setSelectionState("text-selected");
-    // 5. grab full context (message content)
+
     const anchorNode = currentSelection.anchorNode;
-    // anchordNode referso to the DOM node where the text selection happens
     if (anchorNode) {
-      // with .parentElement we access the element that holds the text node
-      // .closest looks for the first parent element with the classname of a single chat msg
       const messageElement = anchorNode.parentElement?.closest(
         `.${styles.singleMessageContainer}`
       );
       if (messageElement) {
-        // once we found the container, we extract the text with textContent
         const fullText = messageElement.textContent || "";
         setSelectedMessage(fullText.trim());
       }
@@ -227,21 +232,13 @@ function NormalChat() {
   };
 
   const openFlashcardModal = () => {
-    setShowPopover(false); // optionally close popover
+    setShowPopover(false);
     setShowFlashcardModal(true);
   };
 
   const getUserLanguage = async () => {
-    const requestOptions = {
-      method: "GET",
-    };
-
-    const response = await fetch(
-      `http://localhost:3000/api/users/${userId}`,
-      requestOptions
-    );
+    const response = await fetch(`http://localhost:3000/api/users/${userId}`);
     const result = await response.json();
-
     setNativeLanguage(result.data.native_language);
   };
 
@@ -270,41 +267,34 @@ function NormalChat() {
     <div>
       <div className={styles.topButtonsContainer}>
         {data?.user ? <SidebarChat /> : ""}
-
-        {messages.length > 1 ? (
-          <Button className={styles.clearButton} onClick={handleClearChat}>
-            Clear
-          </Button>
-        ) : (
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {data?.user ? <SaveChatButton messages={messages} /> : ""}
           <Button
-            className={`${styles.clearButton} ${styles.disabled}`}
-            disabled
+            className={
+              messages.length > 1
+                ? styles.clearButton
+                : `${styles.clearButton} ${styles.disabled}`
+            }
+            onClick={handleClearChat}
+            disabled={messages.length <= 1}
           >
             Clear
           </Button>
-        )}
-
-        {data?.user ? (
-          <div className={styles.clearChatContainer}>
-            <SaveChatButton messages={messages} />
-          </div>
-        ) : null}
+        </div>
       </div>
 
       <div className={styles.chatContainer}>
-        {messages &&
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`${styles.singleMessageContainer} ${
-                msg.role === "user" ? styles.userMessage : styles.otherMessage
-              }`}
-            >
-              <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
-              <span>{msg.content}</span>
-            </div>
-          ))}
-
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`${styles.singleMessageContainer} ${
+              msg.role === "user" ? styles.userMessage : styles.otherMessage
+            }`}
+          >
+            <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
+            <span>{msg.content}</span>
+          </div>
+        ))}
         {selectedText && selectionPosition && (
           <OverlayTrigger
             trigger="click"
@@ -346,7 +336,9 @@ function NormalChat() {
             </p>
           </OverlayTrigger>
         )}
+        <div ref={messagesEndRef} />
       </div>
+
       <div className={styles.inputChatContainer}>
         <Form id="form">
           <div className={styles.sendMessageContainer}>
@@ -375,14 +367,13 @@ function NormalChat() {
               </Button>
             ) : (
               <Button disabled>
-                <IoIosSend />
+                <IoIosSend className={styles.icon} />
               </Button>
             )}
           </div>
         </Form>
       </div>
 
-      {/* This has to be rendered outside of popover otherwise it will always close when you click on it */}
       {geminiDefinition && (
         <TooltipModal
           selectedText={selectedText || ""}
