@@ -34,8 +34,6 @@ export type SelectionStates = "not-selecting" | "selecting" | "text-selected";
 
 function NormalChat() {
   const { data, status } = useSession();
-  const tooltipRef = useRef(null);
-
   const userId = data?.user?.id;
 
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -66,10 +64,6 @@ function NormalChat() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const tooltipStyle = {
     transform: `translate(-50%, 0)`,
@@ -211,13 +205,22 @@ function NormalChat() {
     });
     setSelectionState("text-selected");
 
+    // Get the starting point of the selected text
     const anchorNode = currentSelection.anchorNode;
+
+    // Check if there is any selected text
     if (anchorNode) {
+      // Go up from the selected text and find the nearest message container
       const messageElement = anchorNode.parentElement?.closest(
-        `.${styles.singleMessageContainer}`
+        `.${styles.singleMessageContainer}` // Look for an element with the class 'singleMessageContainer'
       );
+
+      // If we found the message that was selected
       if (messageElement) {
-        const fullText = messageElement.textContent || "";
+        // Get the full text of that message
+        const fullText = messageElement.textContent || ""; // If no text, use an empty string
+
+        // Remove extra spaces at the beginning or end of the text and save it in the state
         setSelectedMessage(fullText.trim());
       }
     }
@@ -248,13 +251,8 @@ function NormalChat() {
     }
   }, [status, userId]);
 
-  const abortController = new AbortController();
-
   useEffect(() => {
-    const signal = abortController.signal;
-    document.addEventListener("selectstart", handleSelectionStart, {
-      signal: signal,
-    });
+    document.addEventListener("selectstart", handleSelectionStart);
     document.addEventListener("mouseup", handleSelectionStop);
 
     return () => {
@@ -262,6 +260,10 @@ function NormalChat() {
       document.removeEventListener("mouseup", handleSelectionStop);
     };
   }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div>
@@ -295,7 +297,7 @@ function NormalChat() {
             <span>{msg.content}</span>
           </div>
         ))}
-        {selectedText && selectionPosition && (
+        {selectedText && selectionPosition && !showFlashcardModal && (
           <OverlayTrigger
             trigger="click"
             placement="bottom"
@@ -336,6 +338,7 @@ function NormalChat() {
             </p>
           </OverlayTrigger>
         )}
+        {/* This is basically creating a marker at the end of the chat container, so that whenever a messages is added to the chat it will scroll automatically to that message with the scrollIntoView method */}
         <div ref={messagesEndRef} />
       </div>
 
