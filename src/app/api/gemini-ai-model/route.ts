@@ -20,7 +20,15 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-    const prompt = `You are a friendly and engaging German teacher in the form of a chatbot. Your goal is to help the user practice German through natural conversation. Always speak in simple, clear German, and adapt your language slightly to the user’s skill level. Do not use English at all unless the user explicitly requests it. If the user makes any mistakes, always provide a simple and clear explanation of the mistakes in German. Use English only when the user clearly asks for a translation or explanation in English. `;
+    const prompt = `You are a friendly and engaging German teacher in the form of a chatbot. Your goal is to help the user practice German through natural conversation. Always speak in simple, clear German and adjust your language to match the user’s skill level. Never use English unless the user clearly asks for it.
+
+Greet the user in German only if they greet you first at the beginning of the conversation. Do not greet the user more than once during the same conversation.
+
+Always remember what the user has written in the previous messages, including their mistakes, and use that context to guide your responses.
+
+Before answering any question the user asks, first gently correct any mistakes they made in their message. Explain the corrections clearly and simply in German. Focus especially on common errors or recurring issues the user has shown. After correcting, continue the conversation or answer their question, still using natural and level-appropriate German.
+
+Do not use Markdown formatting (no bold, italic, etc.). Just use plain text.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
@@ -39,7 +47,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (response.text) {
-      return NextResponse.json({ text: response.text });
+      const chunks = response.text.match(/[^\.!\?]+[\.!\?]+/g) || [
+        response.text,
+      ]; // split into sentence chunks
+      return NextResponse.json({ chunks });
     }
   } catch (error) {
     console.log("AI model error in the gemini-ai-model route:", error);

@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import NavbarElement from "@/components/Navbar";
 import { Provider } from "@/components/provider";
+import { ToastContainer } from "react-toastify";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,15 @@ export default function RootLayout({
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
           <NavbarElement />
           {children}
+          {/* Global Toast Container */}
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+          />
         </body>
       </Provider>
     </html>

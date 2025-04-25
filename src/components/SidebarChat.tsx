@@ -16,6 +16,10 @@ export type MessagesType = {
   content: string;
   role: string;
 };
+// type ComponentProps = {
+//   handleSelectionStart: () => void;
+//   abortController: AbortController;
+// };
 
 function SidebarChat() {
   const { data } = useSession();
@@ -42,19 +46,20 @@ function SidebarChat() {
   };
 
   useEffect(() => {
+    // abortController.abort();
+    // document.removeEventListener("selectstart", handleSelectionStart);
     getUsersChat();
   }, []);
 
   return (
-    <div className="toggle-container">
+    <div className="sidebar-wrapper">
       <Button className="sidebarToggle" onClick={toggleSidebar}>
         {sidebarOpen ? "Close" : "Chats"}
       </Button>
 
       {sidebarOpen && (
         <div className="sidebar">
-          <h4>Your Saved Chats</h4>
-
+          <h4 className="sidebar-title">Your Saved Chats</h4>
           <ul>
             {chats &&
               chats.map((chat, index) => (

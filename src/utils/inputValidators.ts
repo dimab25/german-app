@@ -11,4 +11,13 @@ const validatePassword = (password: string) => {
   return password.length >= 5;
 };
 
-export { validateUsername, validateEmail, validatePassword };
+const validateFlashcardInput = (input: string) => {
+  return input.length >= 4;
+};
+
+export {
+  validateUsername,
+  validateEmail,
+  validatePassword,
+  validateFlashcardInput,
+};
