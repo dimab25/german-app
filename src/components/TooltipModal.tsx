@@ -114,7 +114,7 @@ function TooltipModal({
               value={formData.frontside}
               onChange={handleInputChange}
               name="frontside"
-              placeholder="Frontside (e.g. word or phrase)"
+              placeholder="Frontside (selected word or phrase)"
             />
           </Form.Group>
 

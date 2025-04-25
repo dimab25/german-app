@@ -269,44 +269,29 @@ function NormalChat() {
   return (
     <div>
       <div className={styles.topButtonsContainer}>
-        {data?.user ? (
-          <SidebarChat
-          // handleSelectionStart={handleSelectionStart}
-          // abortController={abortController}
-          />
-        ) : (
-          ""
-        )}
+        {data?.user ? <SidebarChat /> : ""}
 
         {messages.length > 1 ? (
           <Button className={styles.clearButton} onClick={handleClearChat}>
-            <TiDelete className={styles.clearIcon} />
+            Clear
           </Button>
         ) : (
           <Button
             className={`${styles.clearButton} ${styles.disabled}`}
             disabled
           >
-            <TiDelete className={styles.clearIcon} />
+            Clear
           </Button>
         )}
+
+        {data?.user ? (
+          <div className={styles.clearChatContainer}>
+            <SaveChatButton messages={messages} />
+          </div>
+        ) : null}
       </div>
-      {/* {data?.user ? <SidebarChat /> : ""} */}
+
       <div className={styles.chatContainer}>
-        <div className={styles.clearChatContainer}>
-          {/* {messages.length > 1 ? (
-            <Button className={styles.clearButton} onClick={handleClearChat}>
-              <TiDelete className={styles.clearIcon} />
-            </Button>
-          ) : (
-            <Button
-              className={`${styles.clearButton} ${styles.disabled}`}
-              disabled
-            >
-              <TiDelete className={styles.clearIcon} />
-            </Button>
-          )} */}
-        </div>
         {messages &&
           messages.map((msg, index) => (
             <div
@@ -393,8 +378,6 @@ function NormalChat() {
                 <IoIosSend />
               </Button>
             )}
-
-            {data?.user ? <SaveChatButton messages={messages} /> : ""}
           </div>
         </Form>
       </div>
