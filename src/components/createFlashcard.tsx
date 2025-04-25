@@ -1,12 +1,18 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
-import { Button, Form, Image, Modal } from "react-bootstrap";
+import { Button, CardImg, Form, Image, Modal } from "react-bootstrap";
 import { Flashcard } from "../../types/customTypes";
 import { FaRegImage } from "react-icons/fa6";
+import { GoUpload } from "react-icons/go";
+
+import { useSession } from "next-auth/react";
+import { CldImage } from "next-cloudinary";
 import { DiVim } from "react-icons/di";
 
 function CreateFlashcard() {
+  const { status, data } = useSession();
   const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
+
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
@@ -16,6 +22,8 @@ function CreateFlashcard() {
   const handleClose = () => {
     setShow(false);
     setImagePreviewUrl(null);
+    setImageUploadSuccess(false)
+    setUploadedImageUrl(null)
   };
   const handleShow = () => setShow(true);
 
@@ -46,7 +54,7 @@ function CreateFlashcard() {
     e.preventDefault();
     try {
       const formdata = new FormData();
-      // formdata.append("file", fileInput.files[0], "dwarf-planets.webp");
+
       formdata.append("file", selectedFile);
       const requestOptions = {
         method: "POST",
@@ -60,7 +68,9 @@ function CreateFlashcard() {
       const result = await response.json();
       setImageUploadSuccess(result.success);
       setUploadedImageUrl(result.imgUrl);
+      setImagePreviewUrl(null)
       console.log("result image upload :>> ", result);
+      
     } catch (error) {
       console.error(error);
     }
@@ -69,34 +79,36 @@ function CreateFlashcard() {
   const submitNewFlashcard = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "text/plain");
+      if (data?.user) {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "text/plain");
 
-      const raw = JSON.stringify({
-        backside: newFlashcard?.backside,
-        frontside: newFlashcard?.frontside,
-level:"Difficult",
-...(uploadedImageUrl && { imageUrl: uploadedImageUrl }),
-        user_id: "67ee55b7fcafbc953cfe0f56",
-      });
+        const raw = JSON.stringify({
+          backside: newFlashcard?.backside,
+          frontside: newFlashcard?.frontside,
+          level: "Difficult",
+          ...(uploadedImageUrl && { imageUrl: uploadedImageUrl }),
+          user_id: data.user.id,
+        });
 
-      const requestOptions: RequestInit = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
-      const response = await fetch(
-        "http://localhost:3000/api/flashcards",
-        requestOptions
-      );
-      const result = await response.json();
-      setSuccess(result.success);
-      setTimeout(() => {
-        handleClose();
-        setSuccess(false);
-      }, 1000);
-      console.log("result :>> ", result);
+        const requestOptions: RequestInit = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+        const response = await fetch(
+          "http://localhost:3000/api/flashcards",
+          requestOptions
+        );
+        const result = await response.json();
+        setSuccess(result.success);
+        setTimeout(() => {
+          handleClose();
+          setSuccess(false);
+        }, 1000);
+        console.log("result :>> ", result);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -105,13 +117,13 @@ level:"Difficult",
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Create new Flashcard
+      <Button variant="outline-secondary" onClick={handleShow}>
+        Add new card
       </Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Create a new Flashcard</Modal.Title>
+          <Modal.Title>Create new Flashcard</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={submitNewFlashcard}>
@@ -128,18 +140,50 @@ level:"Difficult",
                 style={{ display: "none" }}
                 onChange={handleAttachFile}
               />
-              
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Button variant="outline-secondary" onClick={handleIconClick}>
-                <FaRegImage size={40} />
-              </Button>
+
+              <div style={{ display: "flex", flexDirection: "row",gap:"0.5rem", fontSize:"30px"}}>
+                <div>
+                  {!imageUploadSuccess &&
+                  <Button variant="outline-secondary" onClick={handleIconClick}>
+                    <FaRegImage size={40} />
+                  </Button>}
+                </div>
                 {imagePreviewUrl && (
-                  <Button onClick={handleImageUpload}>Upload</Button>
+                  <div>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={handleImageUpload}
+                  ><GoUpload size={40}/>
+                  </Button></div>
+                )}{" "}
+                
+             
+                
+              </div>
+              {imagePreviewUrl && <div>This is just a image preview, please upload the file!</div>}
+              {imagePreviewUrl && (
+                <div style={{display:"flex", justifyContent:"center", padding:"0.5rem"}}>
+                  <CldImage
+                    src={imagePreviewUrl}
+                    width={200}
+                    height={200}
+                    crop="fill"
+                    alt="uploaded image"
+                  /></div>
                 )}
+           
 
                 {imageUploadSuccess && <div>Image succesfully uploaded!</div>}
-              </div>
-              {imagePreviewUrl && <Image src={imagePreviewUrl} width={100} />}
+                {uploadedImageUrl && (
+                <div style={{display:"flex", justifyContent:"center", padding:"0.5rem"}}>
+                  < CldImage
+                    src={uploadedImageUrl}
+                    width={240}
+                    height={200}
+                    crop="fill"
+                    alt="uploaded image"
+                  /></div>
+                )}
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Frontside</Form.Label>
@@ -163,10 +207,14 @@ level:"Difficult",
                 placeholder=""
               />
             </Form.Group>
+            {imagePreviewUrl ? <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>:  <div style={{display:"flex", gap:"0.5rem" }}>
             <Button type="submit">Create</Button>
             <Button variant="secondary" onClick={handleClose}>
               Close
-            </Button>
+            </Button></div>}
+           
           </Form>
           {success && <div>New flashcard created!</div>}
         </Modal.Body>

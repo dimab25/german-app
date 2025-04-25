@@ -14,3 +14,30 @@ export interface Flashcard {
   updatedAt?: string;
   __v?: number;
 }
+export interface User{
+  name: string; 
+  email: string; 
+  id: string; 
+  password: string; 
+  native_language: string; 
+  
+}
+
+export interface APIOkResponseUser {
+  success: boolean
+  data: User
+}
+
+export interface User {
+  _id: string
+  email: string
+  name: string
+  password: string
+  native_language: string
+  flashcards: string[]
+  chats: string[]
+  created_at: string
+  updatedAt: string
+  imgUrl: string
+  __v: number
+}

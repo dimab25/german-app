@@ -5,3 +5,17 @@ flex-wrap: wrap;
 gap: 1rem;
 padding: 1rem;
 }
+.cardHeader {
+    height: 4rem;
+    font-size: xx-large;
+    text-align: center;
+color: whitesmoke;
+    background-color: rgb(37, 138, 226);
+   
+}
+.previewDeck{
+    display: flex;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    justify-content: left;
+}
