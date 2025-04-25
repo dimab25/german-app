@@ -65,21 +65,17 @@ function TooltipModal({
       const result = await response.json();
 
       if (!result.success) {
-        toast.error("Couldn't create flashcard. Please try again!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        toast.error("Couldn't create flashcard. Please try again!");
         return;
       }
 
-      toast.success("Flashcard created successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      if (result.success) {
+        toast.success("Flashcard created successfully!");
 
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1000);
+        setTimeout(() => {
+          handleCloseModal();
+        }, 1000);
+      }
     } catch (error) {
       console.error("Error submitting flashcard:", error);
       toast.error("Something went wrong!");
@@ -139,8 +135,6 @@ function TooltipModal({
           </div>
         </Form>
       </Modal>
-
-      <ToastContainer />
     </div>
   );
 }
