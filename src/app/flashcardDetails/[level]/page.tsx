@@ -7,39 +7,46 @@ import { Button, Card, CardFooter } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { CldImage, getCldImageUrl } from "next-cloudinary";
+import { useSession } from "next-auth/react";
+
 
 function FlashcardDetails() {
+     const { data, status } = useSession();
   const { level } = useParams<{ level: string }>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [successAdded, setSuccessAdded] = useState<boolean | false>(false);
+  
   const [deck2, setDeck2] = useState<APIOkResponseFlashcards | null>(null);
   const { data: deck } = useFetchHook<APIOkResponseFlashcards>(
     `http://localhost:3000/api/flashcards/${level}`
   );
+console.log('data :>> ', data);
 
   const getFlashcardsByUserID = async () => {
     try {
+      if (data?.user){
       const requestOptions: RequestInit = {
         method: "GET",
         redirect: "follow",
       };
       const response = await fetch(
-        "http://localhost:3000/api/flashcards/67ee55b7fcafbc953cfe0f56",
+        `http://localhost:3000/api/flashcards/${data.user.id}`,
         requestOptions
       );
       const result = await response.json();
-      setDeck2(result);
+      setDeck2(result)};
     } catch (error) {
       console.error(error);
     }
   };
+console.log(deck?.data[currentIndex].imageUrl);
 
   const addFlashcard = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      if (deck) {
+      if (deck && data?.user) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "text/plain");
 
@@ -47,7 +54,8 @@ function FlashcardDetails() {
           backside: deck.data[currentIndex].backside,
           frontside: deck.data[currentIndex].frontside,
           imageUrl: deck.data[currentIndex].imageUrl,
-          user_id: "67ee55b7fcafbc953cfe0f56",
+          user_id: data.user.id,
+          level: "Difficult"
         });
         const requestOptions: RequestInit = {
           method: "POST",
@@ -73,7 +81,7 @@ function FlashcardDetails() {
       const matchedItem =
         deck2 &&
         deck &&
-        deck2.data.find((item) =>
+        deck2.data?.find((item) =>
           item.frontside.includes(deck.data[currentIndex].frontside)
         );
       const matchedId = matchedItem?._id;
@@ -116,7 +124,7 @@ function FlashcardDetails() {
   const exists =
     deck2 &&
     deck &&
-    deck2.data.some((item) =>
+    deck2.data?.some((item) =>
       item.frontside.includes(deck.data[currentIndex].frontside)
     );
 
@@ -126,15 +134,6 @@ function FlashcardDetails() {
     getFlashcardsByUserID();
   }, []);
 
-  // const imageUrl = getCldImageUrl({
-  //   src: '<Your Public ID>',
-  //   width: 100, // Resize the original file to a smaller size
-  // });
-  // const response = await fetch(imageUrl);
-  // const arrayBuffer = await response.arrayBuffer();
-  // const buffer = Buffer.from(arrayBuffer);
-  // const base64 = buffer.toString("base64");
-  // const dataUrl = `data:${response.type};base64,${base64}`;
 
   return (
     <>
@@ -146,7 +145,7 @@ function FlashcardDetails() {
           <Card.Img
             variant="top"
             src={deck && deck.data[currentIndex].imageUrl}
-          />
+          />npm run dev
         ) : null} */}
 
           {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
@@ -158,8 +157,8 @@ function FlashcardDetails() {
               sizes="60vw"
               crop="fill"
               alt="Description of my image"
-              placeholder="blur"
-              blurDataURL="https://res.cloudinary.com/dggcfjjc3/image/upload/v1744794727/windmill-7408365_1280_dcdghy.jpg"
+          
+        
             />
           ) : null}
 
@@ -176,7 +175,7 @@ function FlashcardDetails() {
             <Button onClick={handlePrev} variant="outline-secondary">
               <FaArrowLeft />
             </Button>{" "}
-            {exists == false ? (
+            {exists == false || deck2 && deck2?.success===false  ? (
               <Button onClick={addFlashcard} variant="outline-secondary">
                 +
               </Button>

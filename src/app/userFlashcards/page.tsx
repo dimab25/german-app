@@ -15,9 +15,10 @@ import styles from "./page.module.css";
 import { disable } from "colors";
 
 function DisplayFlashcard() {
-  const { status, data } = useSession();
+  const { status, data  } = useSession();
   console.log("status :>> ", status);
   console.log("data :>> ", data);
+
 
   // const [flashcards, setFlashcards] = useState<Flashcard[] | null>(null);
   const [originalFlashcards, setOriginalFlashcards] = useState<
@@ -38,16 +39,17 @@ function DisplayFlashcard() {
 
   const getFlashcards = async () => {
     try {
-      const requestOptions: RequestInit = {
+      if (data?.user)
+ {     const requestOptions: RequestInit = {
         method: "GET",
         redirect: "follow",
       };
       const response = await fetch(
-        "http://localhost:3000/api/flashcards/67ee55b7fcafbc953cfe0f56",
+        `http://localhost:3000/api/flashcards/${data.user.id}`,
         requestOptions
       );
       const result = await response.json();
-      setOriginalFlashcards(result.data);
+      setOriginalFlashcards(result.data)};
     } catch (error) {
       console.error(error);
     }
@@ -253,7 +255,7 @@ function DisplayFlashcard() {
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Card style={{ maxWidth: "30rem" }}>
           {/* {console.log("currentIndex", currentIndex)} */}
-          {filteredFlashcards && filteredFlashcards?.length > 0 ? (
+          {filteredFlashcards && filteredFlashcards?.length > 0 && filteredFlashcards[currentIndex]?.imageUrl ? (
             <Card.Img
               as={CldImage}
               width="800"
@@ -283,7 +285,7 @@ function DisplayFlashcard() {
             <Card.Text>
               {filteredFlashcards &&
                 filteredFlashcards?.length > 0 &&
-                filteredFlashcards[currentIndex].frontside}
+                filteredFlashcards[currentIndex]?.frontside}
             </Card.Text>
           </Card.Body>
 
@@ -301,7 +303,7 @@ function DisplayFlashcard() {
           >
             {filteredFlashcards &&
               filteredFlashcards?.length > 0 &&
-              filteredFlashcards[currentIndex].level === "Easy" && (
+              filteredFlashcards[currentIndex]?.level === "Easy" && (
                 <>
                   <Button
                     variant="outline-secondary"
@@ -328,7 +330,7 @@ function DisplayFlashcard() {
               )}
             {filteredFlashcards &&
               filteredFlashcards?.length > 0 &&
-              filteredFlashcards[currentIndex].level === "Neutral" && (
+              filteredFlashcards[currentIndex]?.level === "Neutral" && (
                 <>
                   <Button
                     variant="outline-secondary"
@@ -355,7 +357,7 @@ function DisplayFlashcard() {
               )}
             {filteredFlashcards &&
               filteredFlashcards?.length > 0 &&
-              filteredFlashcards[currentIndex].level === "Difficult" && (
+              filteredFlashcards[currentIndex]?.level === "Difficult" && (
                 <>
                   <Button
                     variant="outline-secondary"
@@ -410,7 +412,7 @@ function DisplayFlashcard() {
                       placeholder={
                         filteredFlashcards &&
                         filteredFlashcards?.length > 0 &&
-                        filteredFlashcards[currentIndex].frontside
+                        filteredFlashcards[currentIndex]?.frontside
                       }
                     />
                   </Form.Group>
@@ -425,7 +427,7 @@ function DisplayFlashcard() {
                       placeholder={
                         filteredFlashcards &&
                         filteredFlashcards?.length > 0 &&
-                        filteredFlashcards[currentIndex].backside
+                        filteredFlashcards[currentIndex]?.backside
                       }
                     />
                   </Form.Group>

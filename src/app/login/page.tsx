@@ -9,10 +9,11 @@ import "@/styles/global.css";
 import styles from "../register/page.module.css";
 import Link from "next/link";
 import { validateEmail, validatePassword } from "@/utils/inputValidators";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 function Login() {
+     const { data, status } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 

@@ -1,13 +1,15 @@
 "use client";
 import useFetchHook from "@/hooks/useFetchHook";
 import React from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, CardHeader } from "react-bootstrap";
 import "@/styles/global.css";
 import styles from "./page.module.css";
 import { APIOkResponseFlashcards } from "../../../types/customTypes";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 
 function Flashcardspage() {
+
   const { data: BeginnerDeck } = useFetchHook<APIOkResponseFlashcards>(
     "http://localhost:3000/api/flashcards/Beginner"
   );
@@ -24,53 +26,94 @@ function Flashcardspage() {
   return (
     <>
       <div className={styles.backgroundDiv}>
-        
-          <Card style={{ width: "18rem" }}>
-            <Card.Img variant="top" src="holder.js/100px180" />
-            <Card.Body>
+        <Card style={{ width: "20rem" }}>
+          <CardHeader className={styles.cardHeader}>Beginner</CardHeader>
+          <CardHeader>
+            <div className={styles.previewDeck}>
+              {BeginnerDeck &&
+                BeginnerDeck.data.slice(0,6).map((item, index) => (
+                  <CldImage 
+                  className={index}
+                    width="40"
+                    height="40"
+                    src={item.imageUrl}
+                    sizes="100vw"
+                    crop="fill"
+                    alt="Description of my image"
+                  />
+                ))}
+            </div>
+          </CardHeader>
+          <Card.Body>
+       
+            <Card.Text>
+              Deckcount:
+              {BeginnerDeck && BeginnerDeck.data.length}
+            </Card.Text>
             <Link href={`/flashcardDetails/Beginner`}>
-              <Card.Title>Beginner</Card.Title></Link>
-              <Card.Text>
-                Deckcount:
-                {BeginnerDeck && BeginnerDeck.data.length}
-              </Card.Text>
-              <Button variant="primary">View Deck</Button>
-            </Card.Body>
-          </Card>
+            <Button variant="outline-secondary">View</Button></Link>
+          </Card.Body>
+        </Card>
 
-          <Card style={{ width: "18rem" }}>
-            <Card.Img variant="top" src="holder.js/100px180" />
-            <Card.Body>
+        <Card style={{ width: "20rem" }}>
+          <CardHeader className={styles.cardHeader}>Intermediate</CardHeader>
+          <CardHeader>
+            <div className={styles.previewDeck}>
+              {IntermediateDeck &&
+                IntermediateDeck.data.slice(0,6).map((item) => (
+                  <CldImage
+                    width="40"
+                    height="40"
+                    src={item.imageUrl}
+                    sizes="100vw"
+                    crop="fill"
+                    alt="Description of my image"
+                  />
+                ))}
+            </div>
+          </CardHeader>
+          <Card.Body>
+      
+            <Card.Text>
+              Deckcount:
+              {IntermediateDeck && IntermediateDeck.data.length}
+            </Card.Text>
             <Link href={`/flashcardDetails/Intermediate`}>
-              <Card.Title>Intermediate</Card.Title></Link>
-              <Card.Text>
-                Deckcount:
-                {IntermediateDeck && IntermediateDeck.data.length}
-              </Card.Text>
-              <Button variant="primary">View Deck</Button>
-            </Card.Body>
-          </Card>
+            <Button variant="outline-secondary">View</Button></Link>
+          </Card.Body>
+        </Card>
 
-          <Card style={{ width: "18rem" }}>
-            <Card.Img variant="top" src="holder.js/100px180" />
-            <Card.Body>
+        <Card style={{ width: "20rem" }}>
+          <CardHeader className={styles.cardHeader}>Advanced</CardHeader>
+          <CardHeader>
+            <div className={styles.previewDeck}>
+              {AdvancedDeck &&
+                AdvancedDeck.data.slice(0,6).map((item) => (
+                  <CldImage
+                    width="40"
+                    height="40"
+                    src={item.imageUrl}
+                    sizes="100vw"
+                    crop="fill"
+                    alt="Description of my image"
+                  />
+                ))}
+            </div>
+          </CardHeader>
+          <Card.Body>
+          
+            <Card.Text>
+              Deckcount:
+              {AdvancedDeck && AdvancedDeck.data.length}
+            </Card.Text>
             <Link href={`/flashcardDetails/Advanced`}>
-              <Card.Title>Advanced</Card.Title></Link>
-              <Card.Text>
-                Deckcount:
-                {AdvancedDeck && AdvancedDeck.data.length}
-              </Card.Text>
-              <Button variant="primary">View Deck</Button>
-            </Card.Body>
-          </Card>
+            <Button variant="outline-secondary">View</Button></Link>
+          </Card.Body>
+        </Card>
 
-          {/* <p>{BeginnerDeck && BeginnerDeck.data[0].frontside}</p> */}
-        
+        {/* <p>{BeginnerDeck && BeginnerDeck.data[0].frontside}</p> */}
       </div>
-      <div className={styles.backgroundDiv}>
-     
-      </div>
-   
+      <div className={styles.backgroundDiv}></div>
     </>
   );
 }
