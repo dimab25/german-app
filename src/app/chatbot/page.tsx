@@ -271,8 +271,8 @@ function NormalChat() {
       <div className={styles.topButtonsContainer}>
         {data?.user ? (
           <SidebarChat
-            handleSelectionStart={handleSelectionStart}
-            abortController={abortController}
+          // handleSelectionStart={handleSelectionStart}
+          // abortController={abortController}
           />
         ) : (
           ""
@@ -405,7 +405,11 @@ function NormalChat() {
           selectedText={selectedText || ""}
           geminiDefinition={geminiDefinition || ""}
           show={showFlashcardModal}
-          onHide={() => setShowFlashcardModal(false)}
+          onHide={() => {
+            setShowFlashcardModal(false);
+            setSelectedText("");
+            setGeminiDefinition("");
+          }}
         />
       )}
     </div>

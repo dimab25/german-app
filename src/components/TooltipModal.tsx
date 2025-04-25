@@ -1,10 +1,8 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import "../styles/TooltipModal.css";
-import { IoIosSettings } from "react-icons/io";
 import { Form } from "react-bootstrap";
-import { Flashcard } from "../../types/customTypes";
+import "../styles/TooltipModal.css";
 import { useSession } from "next-auth/react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -23,16 +21,17 @@ function TooltipModal({
 }: TooltipModalProps) {
   const { data } = useSession();
   const userId = data?.user?.id;
-  console.log("%c flashcard modal running", "color:orange");
-  const [formData, setFormData] = useState({
-    frontside: selectedText,
-    backside: geminiDefinition,
-  });
-  const frontsideTest = useRef(selectedText);
-  const backsideTest = useRef(geminiDefinition);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData!, [e.target.name]: e.target.value });
+  const [formData, setFormData] = useState({
+    frontside: "",
+    backside: "",
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCloseModal = () => {
@@ -43,7 +42,7 @@ function TooltipModal({
   const submitNewFlashcard = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.backside || !frontsideTest.current) {
+    if (!formData.frontside || !formData.backside) {
       toast.error("All fields are required!", {
         position: "top-right",
         autoClose: 3000,
@@ -52,31 +51,20 @@ function TooltipModal({
     }
 
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "text/plain");
-
-      const raw = JSON.stringify({
-        backside: formData?.backside,
-        frontside: frontsideTest.current,
-        level: "Difficult",
-        user_id: userId,
+      const response = await fetch("http://localhost:3000/api/flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          frontside: formData.frontside,
+          backside: formData.backside,
+          level: "Difficult",
+          user_id: userId,
+        }),
       });
 
-      const requestOptions: RequestInit = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      };
-      const response = await fetch(
-        "http://localhost:3000/api/flashcards",
-        requestOptions
-      );
       const result = await response.json();
 
-      console.log("result :>> ", result);
-
       if (!result.success) {
-        console.log("Couldn't create flashcard");
         toast.error("Couldn't create flashcard. Please try again!", {
           position: "top-right",
           autoClose: 3000,
@@ -84,34 +72,29 @@ function TooltipModal({
         return;
       }
 
-      if (result.success) {
-        toast.success("Flashcard created successfully!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        setTimeout(() => {
-          onHide();
-        }, 1000);
-        setFormData({ frontside: "", backside: "" });
+      toast.success("Flashcard created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
 
-        return;
-      }
+      setTimeout(() => {
+        handleCloseModal();
+      }, 1000);
     } catch (error) {
-      console.error(error);
+      console.error("Error submitting flashcard:", error);
+      toast.error("Something went wrong!");
     }
   };
 
   useEffect(() => {
-    console.log("frontsideTest :>> ", frontsideTest.current);
-    console.log("selectedText :>> ", selectedText);
-
-    if (show) {
+    if (show && selectedText && geminiDefinition) {
+      // when the modal opens it copies the two var into a local state: formData, so that it won't be connected to any future changes in those 2 variables
       setFormData({
         frontside: selectedText,
         backside: geminiDefinition,
       });
     }
-  }, [frontsideTest.current, geminiDefinition, show]);
+  }, [selectedText, geminiDefinition, show]);
 
   return (
     <div>
@@ -125,29 +108,29 @@ function TooltipModal({
             Do you want to create a new flashcard?
           </Modal.Title>
         </Modal.Header>
+
         <Form style={{ padding: "20px" }} onSubmit={submitNewFlashcard}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Group className="mb-3">
             <Form.Label>Frontside</Form.Label>
             <Form.Control
               as="textarea"
-              rows={1}
-              value={frontsideTest.current}
+              rows={2}
+              value={formData.frontside}
               onChange={handleInputChange}
-              type="text"
               name="frontside"
-              placeholder={frontsideTest.current}
+              placeholder="Frontside (e.g. word or phrase)"
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+
+          <Form.Group className="mb-3">
             <Form.Label>Backside</Form.Label>
             <Form.Control
               as="textarea"
-              rows={1}
+              rows={3}
               value={formData.backside}
               onChange={handleInputChange}
-              type="text"
               name="backside"
-              placeholder={geminiDefinition}
+              placeholder="Backside (definition or explanation)"
             />
           </Form.Group>
 
@@ -156,6 +139,7 @@ function TooltipModal({
           </div>
         </Form>
       </Modal>
+
       <ToastContainer />
     </div>
   );

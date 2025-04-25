@@ -16,15 +16,12 @@ export type MessagesType = {
   content: string;
   role: string;
 };
-type ComponentProps = {
-  handleSelectionStart: () => void;
-  abortController: AbortController;
-};
+// type ComponentProps = {
+//   handleSelectionStart: () => void;
+//   abortController: AbortController;
+// };
 
-function SidebarChat({
-  handleSelectionStart,
-  abortController,
-}: ComponentProps) {
+function SidebarChat() {
   const { data } = useSession();
   const userId = data?.user?.id;
   const [chats, setChats] = useState<ChatType[] | null>(null);
@@ -49,7 +46,7 @@ function SidebarChat({
   };
 
   useEffect(() => {
-    abortController.abort();
+    // abortController.abort();
     // document.removeEventListener("selectstart", handleSelectionStart);
     getUsersChat();
   }, []);
