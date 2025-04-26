@@ -16,21 +16,11 @@ import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
 import { IoIosSend, IoIosSettings } from "react-icons/io";
 import TooltipModal from "@/components/TooltipModal";
-import { TiDelete } from "react-icons/ti";
-
-export type ChatMessage = {
-  role: string;
-  content: string;
-};
-
-export type RectangleSelection = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-export type SelectionStates = "not-selecting" | "selecting" | "text-selected";
+import {
+  ChatMessage,
+  RectangleSelection,
+  SelectionStates,
+} from "../../../types/customTypes";
 
 function NormalChat() {
   const { data, status } = useSession();
@@ -77,8 +67,10 @@ function NormalChat() {
       console.log("type a message first");
       return;
     }
+
     const userMessage: ChatMessage = { content: inputMessage, role: "user" };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedHistory = [...messages, userMessage];
+    setMessages(updatedHistory);
     setInputMessage("");
 
     const myHeaders = new Headers();
@@ -86,6 +78,7 @@ function NormalChat() {
 
     const raw = JSON.stringify({
       message: inputMessage,
+      chatHistory: updatedHistory,
     });
 
     const requestOptions = {

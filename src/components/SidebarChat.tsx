@@ -3,23 +3,7 @@ import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-
-export type ChatType = {
-  created_at: string;
-  messages: MessagesType[];
-  updatedAt: string;
-  user_id: string;
-  _id: string;
-};
-
-export type MessagesType = {
-  content: string;
-  role: string;
-};
-// type ComponentProps = {
-//   handleSelectionStart: () => void;
-//   abortController: AbortController;
-// };
+import { ChatType } from "../../types/customTypes";
 
 function SidebarChat() {
   const { data } = useSession();
@@ -46,8 +30,6 @@ function SidebarChat() {
   };
 
   useEffect(() => {
-    // abortController.abort();
-    // document.removeEventListener("selectstart", handleSelectionStart);
     getUsersChat();
   }, []);
 

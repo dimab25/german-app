@@ -1,9 +1,9 @@
 "use client";
 
-import { ChatMessage } from "@/app/chatbot/page";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { Button } from "react-bootstrap";
+import { ChatMessage } from "../../types/customTypes";
 
 type SaveChatButtonProps = {
   messages: ChatMessage[];
@@ -42,9 +42,13 @@ function SaveChatButton({ messages }: SaveChatButtonProps) {
   return (
     <div>
       {messages.length > 1 ? (
-        <Button onClick={handleSaveChat}>Save</Button>
+        <Button className="save-chat-btn" onClick={handleSaveChat}>
+          Save
+        </Button>
       ) : (
-        <Button disabled>Save</Button>
+        <Button className="save-chat-btn" disabled>
+          Save
+        </Button>
       )}
     </div>
   );
