@@ -5,33 +5,14 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ChatType } from "../../types/customTypes";
 
-function SidebarChat() {
-  const { data } = useSession();
-  const userId = data?.user?.id;
-  const [chats, setChats] = useState<ChatType[] | null>(null);
+type SidebarChatProps = {
+  userChats: ChatType[] | null;
+};
+
+function SidebarChat({ userChats }: SidebarChatProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const getUsersChat = async () => {
-    const requestOptions = {
-      method: "GET",
-    };
-
-    const response = await fetch(
-      `http://localhost:3000/api/users/${userId}/chats`,
-      requestOptions
-    );
-
-    const result = await response.json();
-
-    console.log(result.data);
-    setChats(result.data);
-  };
-
-  useEffect(() => {
-    getUsersChat();
-  }, []);
 
   return (
     <div className="sidebar-wrapper">
@@ -43,8 +24,8 @@ function SidebarChat() {
         <div className="sidebar">
           <h4 className="sidebar-title">Your Saved Chats</h4>
           <ul>
-            {chats &&
-              chats.map((chat, index) => (
+            {userChats &&
+              userChats.map((chat, index) => (
                 <Link
                   className="list-element"
                   key={index}

@@ -14,10 +14,11 @@ import { useSession } from "next-auth/react";
 import { FaRobot } from "react-icons/fa";
 import SidebarChat from "@/components/SidebarChat";
 import SaveChatButton from "@/components/SaveChatButton";
-import { IoIosSend, IoIosSettings } from "react-icons/io";
+import { IoIosSend } from "react-icons/io";
 import TooltipModal from "@/components/TooltipModal";
 import {
   ChatMessage,
+  ChatType,
   RectangleSelection,
   SelectionStates,
 } from "../../../types/customTypes";
@@ -29,7 +30,7 @@ function NormalChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: "Hi there! 👋 Type a message to get started.",
+      content: "Hallo! 👋 Schreibe etwas, um loszulegen.",
     },
   ]);
   const [inputMessage, setInputMessage] = useState("");
@@ -49,6 +50,7 @@ function NormalChat() {
   const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
   const [showPopover, setShowPopover] = useState(false);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
+  const [userChats, setUserChats] = useState<ChatType[] | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
@@ -102,7 +104,7 @@ function NormalChat() {
 
       let assistantMessage: ChatMessage = { content: "", role: "assistant" };
       setMessages((prev) => [...prev, assistantMessage]);
-
+      // looping over text chunks and waiting half a second to render next chunk to create a typewriter effect
       for (let i = 0; i < chunks.length; i++) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         setMessages((prev) => {
@@ -122,7 +124,7 @@ function NormalChat() {
     setMessages([
       {
         role: "assistant",
-        content: "Hi there! 👋 Type a message to get started.",
+        content: "Hallo! 👋 Schreibe etwas, um loszulegen.",
       },
     ]);
     setSelectedText("");
@@ -238,9 +240,26 @@ function NormalChat() {
     setNativeLanguage(result.data.native_language);
   };
 
+  const getUserChats = async () => {
+    const requestOptions = {
+      method: "GET",
+    };
+
+    const response = await fetch(
+      `http://localhost:3000/api/users/${userId}/chats`,
+      requestOptions
+    );
+
+    const result = await response.json();
+
+    console.log(result.data);
+    setUserChats(result.data);
+  };
+
   useEffect(() => {
     if (status === "authenticated" && userId) {
       getUserLanguage();
+      getUserChats();
     }
   }, [status, userId]);
 
@@ -261,9 +280,13 @@ function NormalChat() {
   return (
     <div>
       <div className={styles.topButtonsContainer}>
-        {data?.user ? <SidebarChat /> : ""}
+        {data?.user ? <SidebarChat userChats={userChats} /> : ""}
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          {data?.user ? <SaveChatButton messages={messages} /> : ""}
+          {data?.user ? (
+            <SaveChatButton getUserChats={getUserChats} messages={messages} />
+          ) : (
+            ""
+          )}
           <Button
             className={
               messages.length > 1
@@ -286,7 +309,7 @@ function NormalChat() {
               msg.role === "user" ? styles.userMessage : styles.otherMessage
             }`}
           >
-            <strong>{msg.role === "user" ? "You:" : "Bot:"}</strong>{" "}
+            <strong>{msg.role === "user" ? "You:" : "🤖: "}</strong>{" "}
             <span>{msg.content}</span>
           </div>
         ))}

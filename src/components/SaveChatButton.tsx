@@ -7,9 +7,10 @@ import { ChatMessage } from "../../types/customTypes";
 
 type SaveChatButtonProps = {
   messages: ChatMessage[];
+  getUserChats: () => Promise<void>;
 };
 
-function SaveChatButton({ messages }: SaveChatButtonProps) {
+function SaveChatButton({ messages, getUserChats }: SaveChatButtonProps) {
   const { data } = useSession();
 
   const handleSaveChat = async (
@@ -38,6 +39,7 @@ function SaveChatButton({ messages }: SaveChatButtonProps) {
 
     const result = await response.json();
     console.log(result);
+    getUserChats();
   };
   return (
     <div>
