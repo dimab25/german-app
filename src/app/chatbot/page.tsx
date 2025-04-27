@@ -300,6 +300,28 @@ function NormalChat() {
         </div>
       </div>
 
+      {/* <div className={styles.topButtonsContainer}>
+        {data?.user ? <SidebarChat userChats={userChats} /> : ""}
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {data?.user ? (
+            <SaveChatButton getUserChats={getUserChats} messages={messages} />
+          ) : (
+            ""
+          )}
+          <Button
+            className={
+              messages.length > 1
+                ? styles.clearButton
+                : `${styles.clearButton} ${styles.disabled}`
+            }
+            onClick={handleClearChat}
+            disabled={messages.length <= 1}
+          >
+            Clear
+          </Button>
+        </div>
+      </div> */}
+
       <div className={styles.chatContainer}>
         {messages.map((msg, index) => (
           <div

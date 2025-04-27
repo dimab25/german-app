@@ -38,10 +38,17 @@
   border-top-left-radius: 0;
 }
 
-.topButtonsContainer {
+/* .topButtonsContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+  padding: 10px;
+} */
+.topButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   padding: 10px;
 }
