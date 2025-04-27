@@ -1,7 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ChatType } from "../../types/customTypes";
 
@@ -22,7 +21,11 @@ function SidebarChat({ userChats }: SidebarChatProps) {
 
       {sidebarOpen && (
         <div className="sidebar">
-          <h4 className="sidebar-title">Your Saved Chats</h4>
+          {userChats && userChats.length < 1 ? (
+            <h4 className="sidebar-title">No saved chats yet</h4>
+          ) : (
+            <h4 className="sidebar-title">Your Saved Chats</h4>
+          )}
           <ul>
             {userChats &&
               userChats.map((chat, index) => (

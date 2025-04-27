@@ -251,7 +251,6 @@ function NormalChat() {
     );
 
     const result = await response.json();
-
     console.log(result.data);
     setUserChats(result.data);
   };

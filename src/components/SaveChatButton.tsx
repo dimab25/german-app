@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { ChatMessage } from "../../types/customTypes";
+import { toast } from "react-toastify";
 
 type SaveChatButtonProps = {
   messages: ChatMessage[];
@@ -38,8 +39,16 @@ function SaveChatButton({ messages, getUserChats }: SaveChatButtonProps) {
     );
 
     const result = await response.json();
-    console.log(result);
-    getUserChats();
+
+    if (!result.success) {
+      toast.error("Couldn't save chat. Please try again!");
+      return;
+    }
+    if (result.success) {
+      console.log(result);
+      getUserChats();
+      toast.success("Chat saved successfully!");
+    }
   };
   return (
     <div>
