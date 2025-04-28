@@ -1,5 +1,6 @@
 "use client";
-import React, { useRef } from "react";
+
+import React, { useEffect, useRef } from "react";
 import "../styles/global.css";
 
 function Home() {
@@ -8,29 +9,65 @@ function Home() {
   const handleDotClick = (index: number) => {
     const carousel = carouselRef.current;
     if (carousel) {
-      const videoWidth = carousel.offsetWidth;
+      const slideWidth = carousel.offsetWidth;
       carousel.scrollTo({
-        left: index * videoWidth,
+        left: index * slideWidth,
         behavior: "smooth",
       });
     }
   };
 
+  const handleScroll = () => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    const slides = Array.from(carousel.children) as HTMLLIElement[];
+    const carouselRect = carousel.getBoundingClientRect();
+    const carouselCenter = carouselRect.left + carouselRect.width / 2;
+
+    slides.forEach((slide) => {
+      const slideRect = slide.getBoundingClientRect();
+      const slideCenter = slideRect.left + slideRect.width / 2;
+      const video = slide.querySelector("video") as HTMLVideoElement;
+
+      if (video) {
+        const distance = Math.abs(carouselCenter - slideCenter);
+        if (distance < slideRect.width / 2) {
+          // If this slide is the closest to the center, play the video
+          video.play().catch(() => {
+            // Sometimes browser blocks autoplay - catch errors silently
+          });
+        } else {
+          video.pause();
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    carousel.addEventListener("scroll", handleScroll);
+    handleScroll(); // Run once on mount to set the correct video
+
+    return () => {
+      carousel.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <div className="home-container">
-      {/* Top paragraph */}
-      <p className="home-paragraph">
-        Discover how easy it is to use our app! Swipe or click to explore the
-        steps below.
-      </p>
-
-      <h1 className="home-title">See How It Works 🚀</h1>
+      <h1>How to use DeutschInContext</h1>
 
       <div className="carousel-wrapper">
         <ul className="carousel" ref={carouselRef}>
           <li>
+            <p className="carousel-paragraph">
+              1. Chat with your new German teacher
+            </p>
             <video
-              src="/videos/video1.mp4"
+              src="/videos/final1.mp4"
               controls
               playsInline
               preload="auto"
@@ -39,8 +76,12 @@ function Home() {
             />
           </li>
           <li>
+            <p className="carousel-paragraph">
+              2. Select one word or a sentence to get its translation and
+              meaning
+            </p>
             <video
-              src="/videos/video2.mp4"
+              src="/videos/final2.mp4"
               controls
               playsInline
               preload="auto"
@@ -49,8 +90,11 @@ function Home() {
             />
           </li>
           <li>
+            <p className="carousel-paragraph">
+              3. Create a personal flashcard that you can review at any time!
+            </p>
             <video
-              src="/videos/video3.mp4"
+              src="/videos/final3.mp4"
               controls
               playsInline
               preload="auto"
@@ -61,15 +105,11 @@ function Home() {
         </ul>
 
         <div className="carousel-indicators">
-          <span onClick={() => handleDotClick(0)}></span>
-          <span onClick={() => handleDotClick(1)}></span>
-          <span onClick={() => handleDotClick(2)}></span>
+          <span onClick={() => handleDotClick(0)} />
+          <span onClick={() => handleDotClick(1)} />
+          <span onClick={() => handleDotClick(2)} />
         </div>
       </div>
-
-      <p className="home-paragraph">
-        Start your journey today! Each step is just a swipe or click away 🚀
-      </p>
     </div>
   );
 }

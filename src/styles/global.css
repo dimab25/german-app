@@ -76,8 +76,6 @@ h1 {
 /* carousel */
 .carousel {
   list-style: none;
-  padding: 0;
-  margin: 2rem 0;
 
   display: grid;
   gap: 2rem;
@@ -99,6 +97,7 @@ h1 {
 .carousel > li {
   scroll-snap-align: center;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -109,7 +108,7 @@ h1 {
   height: auto;
   max-height: 70vh;
   object-fit: contain;
-  background: black;
+
   border-radius: 1rem;
 }
 
@@ -117,7 +116,7 @@ h1 {
 .carousel-indicators {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
