@@ -28,17 +28,19 @@ export interface APIOkResponseUser {
 }
 
 export interface User {
-  _id: string;
-  email: string;
-  name: string;
-  password: string;
-  native_language: string;
-  flashcards: string[];
-  chats: string[];
-  created_at: string;
-  updatedAt: string;
-  imgUrl: string;
-  __v: number;
+
+  _id: string
+  email: string
+  name: string
+  password: string
+  native_language: string
+  flashcards: string[]
+  chats: string[]
+  created_at: string
+  updatedAt: string
+  image: string
+  __v: number
+
 }
 
 export type ChatMessage = {

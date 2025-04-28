@@ -2,21 +2,30 @@
 import useFetchHook from "@/hooks/useFetchHook";
 import { useParams } from "next/navigation";
 import { APIOkResponseFlashcards } from "../../../../types/customTypes";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { Button, Card, CardFooter } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { CldImage, getCldImageUrl } from "next-cloudinary";
 import { useSession } from "next-auth/react";
+import { Loader } from "@/utils/loader";
+import "@/styles/global.css";
+import styles from "./page.module.css";
+import Overlay from "react-bootstrap/Overlay";
+import Tooltip from "react-bootstrap/Tooltip";
+
 
 
 function FlashcardDetails() {
      const { data, status } = useSession();
   const { level } = useParams<{ level: string }>();
 
+  const [imageLoaded, setImageLoaded] = useState(false); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [successAdded, setSuccessAdded] = useState<boolean | false>(false);
+  const [show, setShow] = useState(false);
+  const target = useRef(null);
   
   const [deck2, setDeck2] = useState<APIOkResponseFlashcards | null>(null);
   const { data: deck } = useFetchHook<APIOkResponseFlashcards>(
@@ -42,6 +51,11 @@ console.log('data :>> ', data);
     }
   };
 console.log(deck?.data[currentIndex].imageUrl);
+
+const handleImageLoad = () => {
+  console.log("image has loaded");
+  setImageLoaded(true); 
+};
 
   const addFlashcard = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -104,6 +118,7 @@ console.log(deck?.data[currentIndex].imageUrl);
 
   const handleNext = () => {
     setShowAnswer(false);
+    setShow(false);
     if (deck) {
       setCurrentIndex((prev) => (prev + 1) % deck.data.length);
     }
@@ -111,15 +126,13 @@ console.log(deck?.data[currentIndex].imageUrl);
 
   const handlePrev = () => {
     setShowAnswer(false);
+    setShow(false);
     if (deck) {
       setCurrentIndex(
         (prev) => (prev - 1 + deck.data.length) % deck.data.length
       );
     }
   };
-  console.log("Deck2 :>> ", deck2);
-  console.log("level :>> ", level);
-  console.log("successAdded :>> ", successAdded);
 
   const exists =
     deck2 &&
@@ -134,36 +147,58 @@ console.log(deck?.data[currentIndex].imageUrl);
     getFlashcardsByUserID();
   }, []);
 
+  useEffect(() => {
+    setImageLoaded(false); 
+  }, [currentIndex]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
     <>
       {" "}
-      <div>{level}</div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Card style={{ width: "20rem" }}>
-          {/* {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
-          <Card.Img
-            variant="top"
-            src={deck && deck.data[currentIndex].imageUrl}
-          />npm run dev
-        ) : null} */}
-
+      <div className={styles.pageLayout}>
+      <p style={{textAlign:"center"}}><i>{level} deck</i></p>
+      <div style={{ display: "flex", justifyContent: "center", textAlign:"center" }}>
+        <Card  style={{ width: "100%", maxWidth: "50rem", minWidth: "14rem" }}>
+    
           {deck && deck.data[currentIndex].imageUrl.length > 0 ? (
+              <div className={styles.flashcards} >
+                {!imageLoaded && <Loader />}
             <Card.Img
               as={CldImage}
               width="500"
-              height="400"
+              height="300"
               src={deck.data[currentIndex].imageUrl}
               sizes="60vw"
               crop="fill"
               alt="Description of my image"
-          
+              onLoad= {handleImageLoad}
+              style={{
+                objectFit: "cover",
+                height: "100%",
+                width: "100%",
+                opacity: imageLoaded ? 1 : 0, 
+                
+              }}
         
-            />
+            /></div>
           ) : null}
 
           <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
-            <Card.Text>{deck && deck.data[currentIndex].frontside}</Card.Text>
+            <Card.Text ref={target}>{deck && deck.data[currentIndex].frontside}</Card.Text>
+            <Overlay target={target.current} show={show} placement="right" >
+            {(props) => (
+              <Tooltip id="auto-tooltip" {...props}>
+                Click here!
+              </Tooltip>
+            )}
+          </Overlay>
           </Card.Body>
 
           {showAnswer && deck ? (
@@ -172,24 +207,42 @@ console.log(deck?.data[currentIndex].imageUrl);
           <CardFooter
             style={{ display: "flex", justifyContent: "space-between" }}
           >
-            <Button onClick={handlePrev} variant="outline-secondary">
+            <Button size="sm" onClick={handlePrev} variant="outline-secondary">
               <FaArrowLeft />
             </Button>{" "}
-            {exists == false || deck2 && deck2?.success===false  ? (
-              <Button onClick={addFlashcard} variant="outline-secondary">
-                +
-              </Button>
-            ) : (
-              <Button onClick={deleteFlashcard} variant="outline-secondary">
-                -
-              </Button>
-            )}
-            <Button onClick={handleNext} variant="outline-secondary">
+            {data?.user?.id && (
+  (exists === false || (deck2 && deck2.success === false)) ? (
+    <Button  onClick={addFlashcard} variant="outline-secondary">
+      +
+    </Button>
+  ) : (
+    <Button onClick={deleteFlashcard} variant="outline-secondary">
+      -
+    </Button>
+  )
+)}
+     
+
+          
+            <Button  size="sm" onClick={handleNext} variant="outline-secondary">
               <FaArrowRight />
             </Button>
           </CardFooter>
         </Card>
       </div>
+      {deck && deck?.data.length > 0 ? (
+          <div style={{ textAlign: "center", marginTop: "1rem" }}>
+            <i>
+              Count:{currentIndex + 1}/{deck.data.length}
+            </i>
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", marginTop: "1rem" }}>
+            <i>Count:0/0</i>
+          </div>
+        )}
+      </div>
+
     </>
   );
 }
