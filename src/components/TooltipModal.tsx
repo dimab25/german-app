@@ -63,6 +63,7 @@ function TooltipModal({
       });
 
       const result = await response.json();
+      console.log(result);
 
       if (!result.success) {
         toast.error("Couldn't create flashcard. Please try again!");
@@ -95,6 +96,7 @@ function TooltipModal({
   return (
     <div>
       <Modal
+        style={{ zIndex: "2000" }}
         backdropClassName="blur-backdrop"
         show={show}
         onHide={handleCloseModal}

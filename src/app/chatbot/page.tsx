@@ -345,7 +345,7 @@ function NormalChat() {
                   {data?.user ? (
                     <OverlayTrigger
                       overlay={<Tooltip>Create a new flashcard</Tooltip>}
-                      placement="right"
+                      placement="bottom"
                     >
                       <Button
                         variant="outline-primary"
@@ -361,7 +361,7 @@ function NormalChat() {
                   )}
                 </Popover.Header>
 
-                <Popover.Body>
+                <Popover.Body style={{ padding: "1.4rem" }}>
                   {geminiDefinition ?? geminiDefinition}
                 </Popover.Body>
               </Popover>
