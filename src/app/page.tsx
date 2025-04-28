@@ -58,7 +58,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1>How to use DeutschInContext</h1>
+      <h1 style={{ color: "black" }}>How to use DeutschInContext</h1>
 
       <div className="carousel-wrapper">
         <ul className="carousel" ref={carouselRef}>
@@ -66,41 +66,47 @@ function Home() {
             <p className="carousel-paragraph">
               1. Chat with your new German teacher
             </p>
-            <video
-              src="/videos/final1.mp4"
-              controls
-              playsInline
-              preload="auto"
-              muted
-              loop
-            />
+            <div>
+              <video
+                src="/videos/final1.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
+              />
+            </div>
           </li>
           <li>
             <p className="carousel-paragraph">
               2. Select one word or a sentence to get its translation and
               meaning
             </p>
-            <video
-              src="/videos/final2.mp4"
-              controls
-              playsInline
-              preload="auto"
-              muted
-              loop
-            />
+            <div>
+              <video
+                src="/videos/final2.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
+              />
+            </div>
           </li>
           <li>
             <p className="carousel-paragraph">
               3. Create a personal flashcard that you can review at any time!
             </p>
-            <video
-              src="/videos/final3.mp4"
-              controls
-              playsInline
-              preload="auto"
-              muted
-              loop
-            />
+            <div>
+              <video
+                src="/videos/final3.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
+              />
+            </div>
           </li>
         </ul>
 

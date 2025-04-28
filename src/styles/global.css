@@ -1,3 +1,7 @@
+body {
+  background: linear-gradient(0.25turn, #2193b0, #96e3f4, #d5f5fc);
+  font-family: "Courier New", Courier, monospace;
+}
 h1 {
   text-align: center;
 }
@@ -40,12 +44,6 @@ h1 {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   overflow: hidden; /* to round the video corners */
-}
-
-.responsive-video {
-  width: 100%;
-  height: auto;
-  display: block;
 }
 
 /* home container */
@@ -94,6 +92,10 @@ h1 {
   display: none;
 }
 
+.carousel-paragraph {
+  color: black;
+}
+
 .carousel > li {
   scroll-snap-align: center;
   display: flex;
@@ -108,7 +110,7 @@ h1 {
   height: auto;
   max-height: 70vh;
   object-fit: contain;
-
+  margin-bottom: 2rem;
   border-radius: 1rem;
 }
 
@@ -117,13 +119,12 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .carousel-indicators span {
   width: 10px;
   height: 10px;
-  background-color: #ccc;
+  background-color: white;
   border-radius: 50%;
   display: block;
   transition: background-color 0.3s;
