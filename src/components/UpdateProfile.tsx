@@ -1,19 +1,20 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
-import { Button, CardImg, Form, Image, Modal } from "react-bootstrap";
-import { Flashcard } from "../../types/customTypes";
+import { Button, Form, Image, Modal } from "react-bootstrap";
+import { User } from "../../types/customTypes";
 import { FaRegImage } from "react-icons/fa6";
 import { GoUpload } from "react-icons/go";
-import { PiCards } from "react-icons/pi";
-import { IoAddOutline } from "react-icons/io5";
 
 import { useSession } from "next-auth/react";
 import { CldImage } from "next-cloudinary";
-import { DiVim } from "react-icons/di";
 
-function CreateFlashcard() {
+type UpdateProfileProps = {
+  refresh: () => void; 
+};
+
+function UpdateProfile({refresh}:UpdateProfileProps) {
   const { status, data } = useSession();
-  const [newFlashcard, setNewFlashcard] = useState<Flashcard | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<User | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -24,14 +25,14 @@ function CreateFlashcard() {
   const handleClose = () => {
     setShow(false);
     setImagePreviewUrl(null);
-    setImageUploadSuccess(false)
-    setUploadedImageUrl(null)
+    setImageUploadSuccess(false);
+    setUploadedImageUrl(null);
   };
   const handleShow = () => setShow(true);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("e.target.value :>> ", e.target.value);
-    setNewFlashcard({ ...newFlashcard!, [e.target.name]: e.target.value });
+    setUpdatedUser({ ...updatedUser!, [e.target.name]: e.target.value });
   };
 
   const handleAttachFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,8 +44,8 @@ function CreateFlashcard() {
       setImagePreviewUrl(URL.createObjectURL(file));
     }
   };
-  console.log("selectedFile :>> ", selectedFile);
-  console.log("imagePreviewUrl :>> ", imagePreviewUrl);
+  // console.log("selectedFile :>> ", selectedFile);
+  // console.log("imagePreviewUrl :>> ", imagePreviewUrl);
 
   const handleIconClick = () => {
     document.getElementById("fileUploadInput")?.click();
@@ -70,70 +71,65 @@ function CreateFlashcard() {
       const result = await response.json();
       setImageUploadSuccess(result.success);
       setUploadedImageUrl(result.imgUrl);
-      setImagePreviewUrl(null)
+      setImagePreviewUrl(null);
       console.log("result image upload :>> ", result);
-      
     } catch (error) {
       console.error(error);
     }
   };
 
-  const submitNewFlashcard = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submitUpdatedUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (data?.user) {
+      if (data?.user?.id) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "text/plain");
 
         const raw = JSON.stringify({
-          backside: newFlashcard?.backside,
-          frontside: newFlashcard?.frontside,
-          level: "Difficult",
-          ...(uploadedImageUrl && { imageUrl: uploadedImageUrl }),
-          user_id: data.user.id,
+          name: updatedUser?.name,
+          ...(uploadedImageUrl && { image: uploadedImageUrl }),
         });
 
-        const requestOptions: RequestInit = {
-          method: "POST",
+        const requestOptions = {
+          method: "PUT",
           headers: myHeaders,
           body: raw,
           redirect: "follow",
         };
         const response = await fetch(
-          "http://localhost:3000/api/flashcards",
+          `http://localhost:3000/api/users/${data.user.id}`,
           requestOptions
         );
         const result = await response.json();
+
         setSuccess(result.success);
+        refresh();
         setTimeout(() => {
           handleClose();
           setSuccess(false);
         }, 1000);
         console.log("result :>> ", result);
+
       }
     } catch (error) {
       console.error(error);
     }
   };
-  console.log("newFlashcard :>> ", newFlashcard);
+  console.log("updatedUser :>> ", updatedUser);
 
   return (
     <>
-      <Button variant="outline-secondary" onClick={handleShow}>
-         <IoAddOutline  size={30} /><PiCards size={50} /><br />Add new card
+      <Button size="sm" variant="outline-secondary" onClick={handleShow}>
+        Update
       </Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Create new Flashcard</Modal.Title>
+          <Modal.Title>Update </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={submitNewFlashcard}>
+          <Form onSubmit={submitUpdatedUser}>
             <Form.Group className="mb-3">
-              {/* <Form.Label>
-                                
-                          </Form.Label> */}
-
               <Form.Control
                 type="file"
                 name="image"
@@ -143,86 +139,109 @@ function CreateFlashcard() {
                 onChange={handleAttachFile}
               />
 
-              <div style={{ display: "flex", flexDirection: "row",gap:"0.5rem", fontSize:"30px"}}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "0.5rem",
+                  fontSize: "30px",
+                }}
+              >
                 <div>
-                  {!imageUploadSuccess &&
-                  <Button variant="outline-secondary" onClick={handleIconClick}>
-                    <FaRegImage size={40} />
-                  </Button>}
+                  {!imageUploadSuccess && (
+                    <Button
+                      variant="outline-secondary"
+                      onClick={handleIconClick}
+                    >
+                      <FaRegImage size={40} />
+                    </Button>
+                  )}
                 </div>
                 {imagePreviewUrl && (
                   <div>
-                  <Button
-                    variant="outline-secondary"
-                    onClick={handleImageUpload}
-                  ><GoUpload size={40}/>
-                  </Button></div>
+                    <Button
+                      variant="outline-secondary"
+                      onClick={handleImageUpload}
+                    >
+                      <GoUpload size={40} />
+                    </Button>
+                  </div>
                 )}{" "}
-                
-             
-                
               </div>
-              {imagePreviewUrl && <div>This is just a image preview, please upload the file!</div>}
               {imagePreviewUrl && (
-                <div style={{display:"flex", justifyContent:"center", padding:"0.5rem"}}>
+                <div style={{ textAlign: "center", fontSize: "smaller" }}>
+                  This is just a image preview, please upload the file!
+                </div>
+              )}
+              {imagePreviewUrl && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "0.5rem",
+                  }}
+                >
                   <CldImage
                     src={imagePreviewUrl}
                     width={200}
                     height={200}
                     crop="fill"
                     alt="uploaded image"
-                  /></div>
-                )}
-           
+                  />
+                </div>
+              )}
 
-                {imageUploadSuccess && <div>Image succesfully uploaded!</div>}
-                {uploadedImageUrl && (
-                <div style={{display:"flex", justifyContent:"center", padding:"0.5rem"}}>
-                  < CldImage
+              {imageUploadSuccess && <div>Image succesfully uploaded!</div>}
+              {uploadedImageUrl && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "0.5rem",
+                  }}
+                >
+                  <CldImage
                     src={uploadedImageUrl}
                     width={240}
                     height={200}
                     crop="fill"
                     alt="uploaded image"
-                  /></div>
-                )}
+                  />
+                </div>
+              )}
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Frontside</Form.Label>
+              <Form.Label>Name</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={1}
                 onChange={handleInput}
                 type="text"
-                name="frontside"
+                name="name"
                 placeholder=""
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Backside</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={1}
-                onChange={handleInput}
-                type="text"
-                name="backside"
-                placeholder=""
-              />
-            </Form.Group>
-            {imagePreviewUrl ? <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>:  <div style={{display:"flex", gap:"0.5rem" }}>
-            <Button variant="outline-primary" type="submit">Create</Button>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button></div>}
-           
+
+            {imagePreviewUrl ? (
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+            ) : (
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <Button size="sm" variant="outline-primary" type="submit">
+                  Update
+                </Button>
+                <Button size="sm" variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+              </div>
+            )}
           </Form>
-          {success && <div>New flashcard created!</div>}
+          {success && <div>User succesfully updated!</div>}
         </Modal.Body>
       </Modal>
     </>
   );
 }
 
-export default CreateFlashcard;
+export default UpdateProfile;

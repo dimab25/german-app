@@ -1,0 +1,22 @@
+.pageLayout{
+    padding: 0.5rem 2rem 2rem 2rem;
+}
+
+@media (max-width: 768px) {
+   
+    .pageLayout{
+        font-size: smaller;
+    }
+  }
+
+  .flashcards{
+    height: 20rem;
+    position: relative;
+  }
+  @media (max-width: 768px) {
+ .flashcards{
+    height: 20rem;
+    position: relative;
+ }
+  }
+  

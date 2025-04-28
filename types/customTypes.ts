@@ -38,6 +38,6 @@ export interface User {
   chats: string[]
   created_at: string
   updatedAt: string
-  imgUrl: string
+  image: string
   __v: number
 }

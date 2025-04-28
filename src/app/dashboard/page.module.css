@@ -1,0 +1,21 @@
+.pageLayout{
+   font-size: smaller;
+   padding-top: 1rem;
+}
+
+.userInfoButtons{
+    display: flex;
+        gap: 0.5rem;
+   
+}
+
+.flashcardButtons{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.flashcardButtons > button {
+    width: 12rem;
+}
