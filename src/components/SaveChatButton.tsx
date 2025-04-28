@@ -1,15 +1,17 @@
 "use client";
 
-import { ChatMessage } from "@/app/chatbot/page";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { Button } from "react-bootstrap";
+import { ChatMessage } from "../../types/customTypes";
+import { toast } from "react-toastify";
 
 type SaveChatButtonProps = {
   messages: ChatMessage[];
+  getUserChats: () => Promise<void>;
 };
 
-function SaveChatButton({ messages }: SaveChatButtonProps) {
+function SaveChatButton({ messages, getUserChats }: SaveChatButtonProps) {
   const { data } = useSession();
 
   const handleSaveChat = async (
@@ -37,14 +39,27 @@ function SaveChatButton({ messages }: SaveChatButtonProps) {
     );
 
     const result = await response.json();
-    console.log(result);
+
+    if (!result.success) {
+      toast.error("Couldn't save chat. Please try again!");
+      return;
+    }
+    if (result.success) {
+      console.log(result);
+      getUserChats();
+      toast.success("Chat saved successfully!");
+    }
   };
   return (
     <div>
       {messages.length > 1 ? (
-        <Button onClick={handleSaveChat}>Save</Button>
+        <Button className="save-chat-btn" onClick={handleSaveChat}>
+          Save
+        </Button>
       ) : (
-        <Button disabled>Save</Button>
+        <Button className="save-chat-btn" disabled>
+          Save
+        </Button>
       )}
     </div>
   );

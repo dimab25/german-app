@@ -1,55 +1,17 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/Sidebar.css";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { ChatType } from "../../types/customTypes";
 
-export type ChatType = {
-  created_at: string;
-  messages: MessagesType[];
-  updatedAt: string;
-  user_id: string;
-  _id: string;
+type SidebarChatProps = {
+  userChats: ChatType[] | null;
 };
 
-export type MessagesType = {
-  content: string;
-  role: string;
-};
-// type ComponentProps = {
-//   handleSelectionStart: () => void;
-//   abortController: AbortController;
-// };
-
-function SidebarChat() {
-  const { data } = useSession();
-  const userId = data?.user?.id;
-  const [chats, setChats] = useState<ChatType[] | null>(null);
+function SidebarChat({ userChats }: SidebarChatProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const getUsersChat = async () => {
-    const requestOptions = {
-      method: "GET",
-    };
-
-    const response = await fetch(
-      `http://localhost:3000/api/users/${userId}/chats`,
-      requestOptions
-    );
-
-    const result = await response.json();
-
-    console.log(result.data);
-    setChats(result.data);
-  };
-
-  useEffect(() => {
-    // abortController.abort();
-    // document.removeEventListener("selectstart", handleSelectionStart);
-    getUsersChat();
-  }, []);
 
   return (
     <div className="sidebar-wrapper">
@@ -59,10 +21,14 @@ function SidebarChat() {
 
       {sidebarOpen && (
         <div className="sidebar">
-          <h4 className="sidebar-title">Your Saved Chats</h4>
+          {userChats && userChats.length < 1 ? (
+            <h4 className="sidebar-title">No saved chats yet</h4>
+          ) : (
+            <h4 className="sidebar-title">Your Saved Chats</h4>
+          )}
           <ul>
-            {chats &&
-              chats.map((chat, index) => (
+            {userChats &&
+              userChats.map((chat, index) => (
                 <Link
                   className="list-element"
                   key={index}
