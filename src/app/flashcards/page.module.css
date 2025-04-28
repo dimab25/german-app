@@ -6,12 +6,16 @@ gap: 1rem;
 padding: 1rem;
 }
 .cardHeader {
-    height: 4rem;
-    font-size: xx-large;
+    height: 5rem;
+    font-size: x-large;
     text-align: center;
 color: whitesmoke;
     background-color: rgb(37, 138, 226);
    
+}
+.cardBody {
+    display: flex;
+    justify-content: space-between;
 }
 .previewDeck{
     display: flex;
