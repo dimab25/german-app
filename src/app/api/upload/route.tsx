@@ -12,8 +12,8 @@ console.log('file :>> ', await file);
 //  Multipurpose Internet Mail Extensions = mime
   const mimeType = file.type;
   console.log('mimeType :>> ', mimeType);
-  const maxSize =  1024 * 1024;
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+  const maxSize =  2 *1024 * 1024;
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
   if (!allowedTypes.includes(mimeType)) {
     return NextResponse.json(
       { message: "Unsupported file type" },

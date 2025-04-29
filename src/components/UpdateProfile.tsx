@@ -20,6 +20,7 @@ function UpdateProfile({refresh}:UpdateProfileProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState<boolean>(false);
+    const [imageUploadMessage, setImageUploadMessage] = useState("")
   const [success, setSuccess] = useState<boolean>(false);
   const [show, setShow] = useState(false);
   const handleClose = () => {
@@ -27,6 +28,7 @@ function UpdateProfile({refresh}:UpdateProfileProps) {
     setImagePreviewUrl(null);
     setImageUploadSuccess(false);
     setUploadedImageUrl(null);
+    setImageUploadMessage("")
   };
   const handleShow = () => setShow(true);
 
@@ -42,6 +44,7 @@ function UpdateProfile({refresh}:UpdateProfileProps) {
     if (file instanceof File) {
       setSelectedFile(file);
       setImagePreviewUrl(URL.createObjectURL(file));
+      setImageUploadMessage("");
     }
   };
   // console.log("selectedFile :>> ", selectedFile);
@@ -72,7 +75,8 @@ function UpdateProfile({refresh}:UpdateProfileProps) {
       setImageUploadSuccess(result.success);
       setUploadedImageUrl(result.imgUrl);
       setImagePreviewUrl(null);
-      console.log("result image upload :>> ", result);
+      setImageUploadMessage(result.message);
+      
     } catch (error) {
       console.error(error);
     }
@@ -192,6 +196,8 @@ function UpdateProfile({refresh}:UpdateProfileProps) {
               )}
 
               {imageUploadSuccess && <div>Image succesfully uploaded!</div>}
+              {imageUploadMessage==="File too large" && <div>The file is too large; it must not exceed 2 MB.</div>}
+              {imageUploadMessage==="Unsupported file type" && <div>Unsupported file type. Only JPG, JPEG, and PNG formats are allowed.</div>}
               {uploadedImageUrl && (
                 <div
                   style={{

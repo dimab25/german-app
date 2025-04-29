@@ -191,7 +191,7 @@ const handleImageLoad = () => {
           ) : null}
 
           <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
-            <Card.Text ref={target}>{deck && deck.data[currentIndex].frontside}</Card.Text>
+            <Card.Text style={{padding:"1rem"}} ref={target}>{deck && deck.data[currentIndex].frontside}</Card.Text>
             <Overlay target={target.current} show={show} placement="right" >
             {(props) => (
               <Tooltip id="auto-tooltip" {...props}>
@@ -202,7 +202,7 @@ const handleImageLoad = () => {
           </Card.Body>
 
           {showAnswer && deck ? (
-            <CardFooter>{deck.data[currentIndex].backside}</CardFooter>
+            <CardFooter style={{padding:"1.5rem"}}>{deck.data[currentIndex].backside}</CardFooter>
           ) : null}
           <CardFooter
             style={{ display: "flex", justifyContent: "space-between" }}
