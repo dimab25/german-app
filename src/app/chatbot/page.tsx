@@ -22,6 +22,7 @@ import {
   RectangleSelection,
   SelectionStates,
 } from "../../../types/customTypes";
+import { toast } from "react-toastify";
 
 function NormalChat() {
   const { data, status } = useSession();
@@ -46,6 +47,8 @@ function NormalChat() {
   const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
     ""
   );
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isLoadingDefinition, setIsLoadingDefinition] = useState(false);
 
   const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
   const [showPopover, setShowPopover] = useState(false);
@@ -74,6 +77,7 @@ function NormalChat() {
     const updatedHistory = [...messages, userMessage];
     setMessages(updatedHistory);
     setInputMessage("");
+    setIsChatLoading(true); // START loading
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -83,28 +87,31 @@ function NormalChat() {
       chatHistory: updatedHistory,
     });
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/gemini-ai-model",
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        }
+      );
 
-    const response = await fetch(
-      "http://localhost:3000/api/gemini-ai-model",
-      requestOptions
-    );
+      if (!response.ok) {
+        toast.error("AI model not available :( Try again!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
 
-    if (!response.ok) {
-      console.log("Error getting a response by the AI model");
-    }
-
-    if (response.ok) {
       const result = await response.json();
       const chunks: string[] = result.chunks;
+      const updatedHistory: ChatMessage[] = result.chatHistory;
 
       let assistantMessage: ChatMessage = { content: "", role: "assistant" };
-      setMessages((prev) => [...prev, assistantMessage]);
-      // looping over text chunks and waiting half a second to render next chunk to create a typewriter effect
+      setMessages([...updatedHistory.slice(0, -1), assistantMessage]);
+
       for (let i = 0; i < chunks.length; i++) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         setMessages((prev) => {
@@ -117,6 +124,10 @@ function NormalChat() {
           return updatedMessages;
         });
       }
+    } catch (err) {
+      console.error("Failed to fetch chat response", err);
+    } finally {
+      setIsChatLoading(false); // STOP loading
     }
   };
 
@@ -135,32 +146,42 @@ function NormalChat() {
     context: string,
     language: string
   ) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      selectedText: text,
-      context: context,
-      language: language,
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-
+    setIsLoadingDefinition(true);
     try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        selectedText: text,
+        context: context,
+        language: language,
+      });
+
       const response = await fetch(
         "http://localhost:3000/api/gemini-word-info",
-        requestOptions
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        }
       );
+
+      if (!response.ok) {
+        console.log("Error fetching word information");
+        toast.error("AI model not available :( Try again!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
 
       const result = await response.json();
       console.log(result.text);
       setGeminiDefinition(result.text);
     } catch (error) {
       console.log("error");
+    } finally {
+      setIsLoadingDefinition(false);
     }
   };
 
@@ -300,28 +321,6 @@ function NormalChat() {
         </div>
       </div>
 
-      {/* <div className={styles.topButtonsContainer}>
-        {data?.user ? <SidebarChat userChats={userChats} /> : ""}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {data?.user ? (
-            <SaveChatButton getUserChats={getUserChats} messages={messages} />
-          ) : (
-            ""
-          )}
-          <Button
-            className={
-              messages.length > 1
-                ? styles.clearButton
-                : `${styles.clearButton} ${styles.disabled}`
-            }
-            onClick={handleClearChat}
-            disabled={messages.length <= 1}
-          >
-            Clear
-          </Button>
-        </div>
-      </div> */}
-
       <div className={styles.chatContainer}>
         {messages.map((msg, index) => (
           <div
@@ -330,8 +329,26 @@ function NormalChat() {
               msg.role === "user" ? styles.userMessage : styles.otherMessage
             }`}
           >
-            <strong>{msg.role === "user" ? "You:" : "🤖: "}</strong>{" "}
-            <span>{msg.content}</span>
+            {msg.role === "user" ? (
+              <>
+                <strong>You:</strong> <span>{msg.content}</span>
+              </>
+            ) : (
+              <>
+                <strong>
+                  🤖
+                  {msg.content === "" && (
+                    <span style={{ marginLeft: "8px" }}>
+                      <div
+                        className="spinner-border spinner-border-sm text-secondary"
+                        role="status"
+                      />
+                    </span>
+                  )}
+                </strong>
+                <span>: {msg.content}</span>
+              </>
+            )}
           </div>
         ))}
         {selectedText && selectionPosition && !showFlashcardModal && (
@@ -347,14 +364,18 @@ function NormalChat() {
                       overlay={<Tooltip>Create a new flashcard</Tooltip>}
                       placement="bottom"
                     >
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={openFlashcardModal}
-                        className={styles.createFlashcardBtn}
-                      >
-                        +
-                      </Button>
+                      {isLoadingDefinition ? (
+                        <div></div>
+                      ) : (
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={openFlashcardModal}
+                          className={styles.createFlashcardBtn}
+                        >
+                          +
+                        </Button>
+                      )}
                     </OverlayTrigger>
                   ) : (
                     ""
@@ -362,7 +383,16 @@ function NormalChat() {
                 </Popover.Header>
 
                 <Popover.Body style={{ padding: "1.4rem" }}>
-                  {geminiDefinition ?? geminiDefinition}
+                  {isLoadingDefinition ? (
+                    <div className={styles.spinnerContainer}>
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      />
+                    </div>
+                  ) : (
+                    geminiDefinition
+                  )}
                 </Popover.Body>
               </Popover>
             }

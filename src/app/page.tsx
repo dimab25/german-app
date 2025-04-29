@@ -1,47 +1,49 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/global.css";
 
 function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLUListElement | null>(null);
-
-  const handleDotClick = (index: number) => {
-    const carousel = carouselRef.current;
-    if (carousel) {
-      const slideWidth = carousel.offsetWidth;
-      carousel.scrollTo({
-        left: index * slideWidth,
-        behavior: "smooth",
-      });
-    }
-  };
 
   const handleScroll = () => {
     const carousel = carouselRef.current;
     if (!carousel) return;
 
+    const scrollLeft = carousel.scrollLeft;
+    const slideWidth = carousel.offsetWidth;
+
+    const newIndex = Math.round(scrollLeft / slideWidth);
+    setActiveIndex(newIndex);
+
+    // Play/pause logic
     const slides = Array.from(carousel.children) as HTMLLIElement[];
-    const carouselRect = carousel.getBoundingClientRect();
-    const carouselCenter = carouselRect.left + carouselRect.width / 2;
-
-    slides.forEach((slide) => {
-      const slideRect = slide.getBoundingClientRect();
-      const slideCenter = slideRect.left + slideRect.width / 2;
+    slides.forEach((slide, index) => {
       const video = slide.querySelector("video") as HTMLVideoElement;
+      if (!video) return;
 
-      if (video) {
-        const distance = Math.abs(carouselCenter - slideCenter);
-        if (distance < slideRect.width / 2) {
-          // If this slide is the closest to the center, play the video
-          video.play().catch(() => {
-            // Sometimes browser blocks autoplay - catch errors silently
-          });
-        } else {
-          video.pause();
-        }
+      if (index === newIndex) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
       }
     });
+  };
+
+  const handleArrowClick = (direction: -1 | 1) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    const slideWidth = carousel.offsetWidth;
+    const newIndex = Math.max(0, Math.min(activeIndex + direction, 2));
+
+    carousel.scrollTo({
+      left: newIndex * slideWidth,
+      behavior: "smooth",
+    });
+
+    setActiveIndex(newIndex);
   };
 
   useEffect(() => {
@@ -49,7 +51,7 @@ function Home() {
     if (!carousel) return;
 
     carousel.addEventListener("scroll", handleScroll);
-    handleScroll(); // Run once on mount to set the correct video
+    handleScroll(); // Initial call
 
     return () => {
       carousel.removeEventListener("scroll", handleScroll);
@@ -58,7 +60,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1 style={{ color: "black" }}>How to use DeutschInContext</h1>
+      <h2 style={{ color: "black" }}>How to use DeutschInContext</h2>
 
       <div className="carousel-wrapper">
         <ul className="carousel" ref={carouselRef}>
@@ -93,7 +95,7 @@ function Home() {
               />
             </div>
           </li>
-          <li>
+          <li className="third-video">
             <p className="carousel-paragraph">
               3. Create a personal flashcard that you can review at any time!
             </p>
@@ -110,10 +112,21 @@ function Home() {
           </li>
         </ul>
 
-        <div className="carousel-indicators">
-          <span onClick={() => handleDotClick(0)} />
-          <span onClick={() => handleDotClick(1)} />
-          <span onClick={() => handleDotClick(2)} />
+        <div className="carousel-arrows">
+          <button
+            onClick={() => handleArrowClick(-1)}
+            disabled={activeIndex === 0}
+            className="carousel-arrow left"
+          >
+            ◀
+          </button>
+          <button
+            onClick={() => handleArrowClick(1)}
+            disabled={activeIndex === 2}
+            className="carousel-arrow right"
+          >
+            ▶
+          </button>
         </div>
       </div>
     </div>

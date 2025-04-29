@@ -191,7 +191,12 @@ function Register() {
                 <option value="Portuguese">Portuguese</option>
                 <option value="Russian">Russian</option>
                 <option value="Japanese">Japanese</option>
-                <option value="Turkish">Turkish</option>
+
+                <option value="Chinese">Chinese</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Bengali">Bengali</option>
+                <option value="Urdu">Urdu</option>
 
                 <option value="Neapolitan">Neapolitan</option>
               </optgroup>

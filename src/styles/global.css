@@ -76,7 +76,7 @@ h1 {
   list-style: none;
 
   display: grid;
-  gap: 2rem;
+
   grid-auto-flow: column;
   grid-auto-columns: 100%;
 
@@ -88,12 +88,15 @@ h1 {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .carousel::-webkit-scrollbar {
   display: none;
 }
 
 .carousel-paragraph {
   color: black;
+  font-weight: 600;
+  font-size: large;
 }
 
 .carousel > li {
@@ -114,22 +117,41 @@ h1 {
   border-radius: 1rem;
 }
 
-/* carousel indicators (dots) */
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+.third-video {
+  padding-right: 0.1rem;
+}
+/* arrows */
+
+.carousel-wrapper {
+  position: relative;
 }
 
-.carousel-indicators span {
-  width: 10px;
-  height: 10px;
-  background-color: white;
-  border-radius: 50%;
-  display: block;
-  transition: background-color 0.3s;
-}
-.carousel-indicators span:hover {
-  background-color: #333;
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: black;
   cursor: pointer;
+  transition: opacity 0.3s;
+  z-index: 2;
+}
+
+.carousel-arrow:hover {
+  color: white;
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-arrow.left {
+  left: -2rem;
+}
+
+.carousel-arrow.right {
+  right: -2rem;
 }

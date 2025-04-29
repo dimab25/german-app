@@ -136,6 +136,17 @@
   border: solid 1px rgb(168, 168, 168);
 }
 
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+}
+
+.spinner-border {
+  vertical-align: middle;
+}
+
 .icon {
   font-size: x-large;
 }
