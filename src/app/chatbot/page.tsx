@@ -1,433 +1,136 @@
 "use client";
 
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import "@/styles/global.css";
-import styles from "./page.module.css";
-import {
-  Button,
-  Form,
-  OverlayTrigger,
-  Popover,
-  Tooltip,
-} from "react-bootstrap";
-import { useSession } from "next-auth/react";
-import { FaRobot } from "react-icons/fa";
-import SidebarChat from "@/components/SidebarChat";
-import SaveChatButton from "@/components/SaveChatButton";
-import { IoIosSend } from "react-icons/io";
-import TooltipModal from "@/components/TooltipModal";
-import {
-  ChatMessage,
-  ChatType,
-  RectangleSelection,
-  SelectionStates,
-} from "../../../types/customTypes";
+import React, { useEffect, useRef, useState } from "react";
+import "../../styles/global.css";
 
-function NormalChat() {
-  const { data, status } = useSession();
-  const userId = data?.user?.id;
+function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef<HTMLUListElement | null>(null);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      content: "Hallo! 👋 Schreibe etwas, um loszulegen.",
-    },
-  ]);
-  const [inputMessage, setInputMessage] = useState("");
+  const handleScroll = () => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
 
-  const [selectedText, setSelectedText] = useState<string | null>("");
-  const [selectedMessage, setSelectedMessage] = useState<string | null>("");
+    const scrollLeft = carousel.scrollLeft;
+    const slideWidth = carousel.offsetWidth;
 
-  const [selectionState, setSelectionState] =
-    useState<SelectionStates>("not-selecting");
-  const [selectionPosition, setSelectionPosition] =
-    useState<RectangleSelection>();
+    const newIndex = Math.round(scrollLeft / slideWidth);
+    setActiveIndex(newIndex);
 
-  const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
-    ""
-  );
+    // Play/pause logic
+    const slides = Array.from(carousel.children) as HTMLLIElement[];
+    slides.forEach((slide, index) => {
+      const video = slide.querySelector("video") as HTMLVideoElement;
+      if (!video) return;
 
-  const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
-  const [showPopover, setShowPopover] = useState(false);
-  const [showFlashcardModal, setShowFlashcardModal] = useState(false);
-  const [userChats, setUserChats] = useState<ChatType[] | null>(null);
-
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const tooltipStyle = {
-    transform: `translate(-50%, 0)`,
-    left: `${selectionPosition?.x}px`,
-    top: `${selectionPosition?.y}px`,
-    zIndex: 9999,
-  };
-
-  const handleChat = async () => {
-    if (!inputMessage.trim()) {
-      console.log("type a message first");
-      return;
-    }
-
-    const userMessage: ChatMessage = { content: inputMessage, role: "user" };
-    const updatedHistory = [...messages, userMessage];
-    setMessages(updatedHistory);
-    setInputMessage("");
-
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      message: inputMessage,
-      chatHistory: updatedHistory,
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-
-    const response = await fetch(
-      "http://localhost:3000/api/gemini-ai-model",
-      requestOptions
-    );
-
-    if (!response.ok) {
-      console.log("Error getting a response by the AI model");
-    }
-
-    if (response.ok) {
-      const result = await response.json();
-      const chunks: string[] = result.chunks;
-
-      let assistantMessage: ChatMessage = { content: "", role: "assistant" };
-      setMessages((prev) => [...prev, assistantMessage]);
-      // looping over text chunks and waiting half a second to render next chunk to create a typewriter effect
-      for (let i = 0; i < chunks.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setMessages((prev) => {
-          const updatedMessages = [...prev];
-          const lastIndex = updatedMessages.length - 1;
-          updatedMessages[lastIndex] = {
-            ...updatedMessages[lastIndex],
-            content: updatedMessages[lastIndex].content + chunks[i],
-          };
-          return updatedMessages;
-        });
+      if (index === newIndex) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
       }
-    }
+    });
   };
 
-  const handleClearChat = () => {
-    setMessages([
-      {
-        role: "assistant",
-        content: "Hallo! 👋 Schreibe etwas, um loszulegen.",
-      },
-    ]);
-    setSelectedText("");
-  };
+  const handleArrowClick = (direction: -1 | 1) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
 
-  const fetchWordInfo = async (
-    text: string,
-    context: string,
-    language: string
-  ) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    const slideWidth = carousel.offsetWidth;
+    const newIndex = Math.max(0, Math.min(activeIndex + direction, 2));
 
-    const raw = JSON.stringify({
-      selectedText: text,
-      context: context,
-      language: language,
+    carousel.scrollTo({
+      left: newIndex * slideWidth,
+      behavior: "smooth",
     });
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/gemini-word-info",
-        requestOptions
-      );
-
-      const result = await response.json();
-      console.log(result.text);
-      setGeminiDefinition(result.text);
-    } catch (error) {
-      console.log("error");
-    }
-  };
-
-  function handleSelectionStart() {
-    setSelectionState("selecting");
-    setSelectedText(null);
-  }
-
-  function handleSelectionStop() {
-    const currentSelection = document.getSelection();
-    if (!currentSelection) return;
-
-    const text = currentSelection.toString();
-
-    if (!text) {
-      setSelectionState("not-selecting");
-      setSelectedText(null);
-      setSelectedMessage(null);
-      return;
-    }
-
-    const selectedTextRectangle = currentSelection
-      .getRangeAt(0)
-      .getBoundingClientRect();
-
-    setSelectedText(text);
-
-    setSelectionPosition({
-      x: selectedTextRectangle.left + selectedTextRectangle.width / 2,
-      y:
-        selectedTextRectangle.top +
-        selectedTextRectangle.height +
-        window.scrollY +
-        8,
-      width: selectedTextRectangle.width,
-      height: selectedTextRectangle.height,
-    });
-    setSelectionState("text-selected");
-
-    // Get the starting point of the selected text
-    const anchorNode = currentSelection.anchorNode;
-
-    // Check if there is any selected text
-    if (anchorNode) {
-      // Go up from the selected text and find the nearest message container
-      const messageElement = anchorNode.parentElement?.closest(
-        `.${styles.singleMessageContainer}` // Look for an element with the class 'singleMessageContainer'
-      );
-
-      // If we found the message that was selected
-      if (messageElement) {
-        // Get the full text of that message
-        const fullText = messageElement.textContent || ""; // If no text, use an empty string
-
-        // Remove extra spaces at the beginning or end of the text and save it in the state
-        setSelectedMessage(fullText.trim());
-      }
-    }
-  }
-
-  const handleSendToChat = async () => {
-    if (selectedText && selectedMessage) {
-      const language = nativeLanguage || "english";
-      await fetchWordInfo(selectedText, selectedMessage, language);
-      setShowPopover(true);
-    }
-  };
-
-  const openFlashcardModal = () => {
-    setShowPopover(false);
-    setShowFlashcardModal(true);
-  };
-
-  const getUserLanguage = async () => {
-    const response = await fetch(`http://localhost:3000/api/users/${userId}`);
-    const result = await response.json();
-    setNativeLanguage(result.data.native_language);
-  };
-
-  const getUserChats = async () => {
-    const requestOptions = {
-      method: "GET",
-    };
-
-    const response = await fetch(
-      `http://localhost:3000/api/users/${userId}/chats`,
-      requestOptions
-    );
-
-    const result = await response.json();
-    console.log(result.data);
-    setUserChats(result.data);
+    setActiveIndex(newIndex);
   };
 
   useEffect(() => {
-    if (status === "authenticated" && userId) {
-      getUserLanguage();
-      getUserChats();
-    }
-  }, [status, userId]);
+    const carousel = carouselRef.current;
+    if (!carousel) return;
 
-  useEffect(() => {
-    document.addEventListener("selectstart", handleSelectionStart);
-    document.addEventListener("mouseup", handleSelectionStop);
+    carousel.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial call
 
     return () => {
-      document.removeEventListener("selectstart", handleSelectionStart);
-      document.removeEventListener("mouseup", handleSelectionStop);
+      carousel.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   return (
-    <div>
-      <div className={styles.topButtonsContainer}>
-        {data?.user ? <SidebarChat userChats={userChats} /> : ""}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {data?.user ? (
-            <SaveChatButton getUserChats={getUserChats} messages={messages} />
-          ) : (
-            ""
-          )}
-          <Button
-            className={
-              messages.length > 1
-                ? styles.clearButton
-                : `${styles.clearButton} ${styles.disabled}`
-            }
-            onClick={handleClearChat}
-            disabled={messages.length <= 1}
-          >
-            Clear
-          </Button>
-        </div>
-      </div>
+    <div className="home-container">
+      <h1 style={{ color: "black" }}>How to use DeutschInContext</h1>
 
-      {/* <div className={styles.topButtonsContainer}>
-        {data?.user ? <SidebarChat userChats={userChats} /> : ""}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {data?.user ? (
-            <SaveChatButton getUserChats={getUserChats} messages={messages} />
-          ) : (
-            ""
-          )}
-          <Button
-            className={
-              messages.length > 1
-                ? styles.clearButton
-                : `${styles.clearButton} ${styles.disabled}`
-            }
-            onClick={handleClearChat}
-            disabled={messages.length <= 1}
-          >
-            Clear
-          </Button>
-        </div>
-      </div> */}
-
-      <div className={styles.chatContainer}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`${styles.singleMessageContainer} ${
-              msg.role === "user" ? styles.userMessage : styles.otherMessage
-            }`}
-          >
-            <strong>{msg.role === "user" ? "You:" : "🤖: "}</strong>{" "}
-            <span>{msg.content}</span>
-          </div>
-        ))}
-        {selectedText && selectionPosition && !showFlashcardModal && (
-          <OverlayTrigger
-            trigger="click"
-            placement="bottom"
-            overlay={
-              <Popover>
-                <Popover.Header className={styles.popoverHeader} as="h4">
-                  {selectedText}
-                  {data?.user ? (
-                    <OverlayTrigger
-                      overlay={<Tooltip>Create a new flashcard</Tooltip>}
-                      placement="bottom"
-                    >
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={openFlashcardModal}
-                        className={styles.createFlashcardBtn}
-                      >
-                        +
-                      </Button>
-                    </OverlayTrigger>
-                  ) : (
-                    ""
-                  )}
-                </Popover.Header>
-
-                <Popover.Body style={{ padding: "1.4rem" }}>
-                  {geminiDefinition ?? geminiDefinition}
-                </Popover.Body>
-              </Popover>
-            }
-          >
-            <p className={styles.tooltip} style={tooltipStyle}>
-              <Button className={styles.buttonAI} onClick={handleSendToChat}>
-                <span>ask AI</span>
-                <FaRobot />
-              </Button>
+      <div className="carousel-wrapper">
+        <ul className="carousel" ref={carouselRef}>
+          <li>
+            <p className="carousel-paragraph">
+              1. Chat with your new German teacher
             </p>
-          </OverlayTrigger>
-        )}
-        {/* This is basically creating a marker at the end of the chat container, so that whenever a messages is added to the chat it will scroll automatically to that message with the scrollIntoView method */}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className={styles.inputChatContainer}>
-        <Form id="form">
-          <div className={styles.sendMessageContainer}>
-            <Form.Group controlId="message-input">
-              <Form.Control
-                className={styles.sendMessageInput}
-                type="text"
-                as="textarea"
-                placeholder="Type a message"
-                name="message"
-                autoCapitalize="on"
-                autoComplete="off"
-                autoCorrect="on"
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleChat();
-                  }
-                }}
-                value={inputMessage}
+            <div>
+              <video
+                src="/videos/final1.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
               />
-            </Form.Group>
-            {inputMessage.length > 0 ? (
-              <Button onClick={handleChat} type="submit">
-                <IoIosSend className={styles.icon} />
-              </Button>
-            ) : (
-              <Button disabled>
-                <IoIosSend className={styles.icon} />
-              </Button>
-            )}
-          </div>
-        </Form>
-      </div>
+            </div>
+          </li>
+          <li>
+            <p className="carousel-paragraph">
+              2. Select one word or a sentence to get its translation and
+              meaning
+            </p>
+            <div>
+              <video
+                src="/videos/final2.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
+              />
+            </div>
+          </li>
+          <li className="third-video">
+            <p className="carousel-paragraph">
+              3. Create a personal flashcard that you can review at any time!
+            </p>
+            <div>
+              <video
+                src="/videos/final3.mp4"
+                controls
+                playsInline
+                preload="auto"
+                muted
+                loop
+              />
+            </div>
+          </li>
+        </ul>
 
-      {geminiDefinition && (
-        <TooltipModal
-          selectedText={selectedText || ""}
-          geminiDefinition={geminiDefinition || ""}
-          show={showFlashcardModal}
-          onHide={() => {
-            setShowFlashcardModal(false);
-            setSelectedText("");
-            setGeminiDefinition("");
-          }}
-        />
-      )}
+        <div className="carousel-arrows">
+          <button
+            onClick={() => handleArrowClick(-1)}
+            disabled={activeIndex === 0}
+            className="carousel-arrow left"
+          >
+            ◀
+          </button>
+          <button
+            onClick={() => handleArrowClick(1)}
+            disabled={activeIndex === 2}
+            className="carousel-arrow right"
+          >
+            ▶
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default NormalChat;
+export default Home;
