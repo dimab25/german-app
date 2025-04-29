@@ -47,7 +47,7 @@ function NormalChat() {
   const [geminiDefinition, setGeminiDefinition] = useState<string | undefined>(
     ""
   );
-
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [isLoadingDefinition, setIsLoadingDefinition] = useState(false);
 
   const [nativeLanguage, setNativeLanguage] = useState<string | null>("");
@@ -77,6 +77,7 @@ function NormalChat() {
     const updatedHistory = [...messages, userMessage];
     setMessages(updatedHistory);
     setInputMessage("");
+    setIsChatLoading(true); // START loading
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -86,27 +87,24 @@ function NormalChat() {
       chatHistory: updatedHistory,
     });
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/gemini-ai-model",
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        }
+      );
 
-    const response = await fetch(
-      "http://localhost:3000/api/gemini-ai-model",
-      requestOptions
-    );
+      if (!response.ok) {
+        toast.error("AI model not available :( Try again!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
 
-    if (!response.ok) {
-      console.log("Error getting a response by the AI model");
-      toast.error("AI model not available :( Try again!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
-
-    if (response.ok) {
       const result = await response.json();
       const chunks: string[] = result.chunks;
       const updatedHistory: ChatMessage[] = result.chatHistory;
@@ -126,6 +124,10 @@ function NormalChat() {
           return updatedMessages;
         });
       }
+    } catch (err) {
+      console.error("Failed to fetch chat response", err);
+    } finally {
+      setIsChatLoading(false); // STOP loading
     }
   };
 
@@ -163,6 +165,15 @@ function NormalChat() {
           body: raw,
         }
       );
+
+      if (!response.ok) {
+        console.log("Error fetching word information");
+        toast.error("AI model not available :( Try again!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
 
       const result = await response.json();
       console.log(result.text);
@@ -318,8 +329,26 @@ function NormalChat() {
               msg.role === "user" ? styles.userMessage : styles.otherMessage
             }`}
           >
-            <strong>{msg.role === "user" ? "You:" : "🤖: "}</strong>{" "}
-            <span>{msg.content}</span>
+            {msg.role === "user" ? (
+              <>
+                <strong>You:</strong> <span>{msg.content}</span>
+              </>
+            ) : (
+              <>
+                <strong>
+                  🤖
+                  {msg.content === "" && (
+                    <span style={{ marginLeft: "8px" }}>
+                      <div
+                        className="spinner-border spinner-border-sm text-secondary"
+                        role="status"
+                      />
+                    </span>
+                  )}
+                </strong>
+                <span>: {msg.content}</span>
+              </>
+            )}
           </div>
         ))}
         {selectedText && selectionPosition && !showFlashcardModal && (
