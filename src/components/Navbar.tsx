@@ -7,7 +7,7 @@ import React from "react";
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
 
 function NavbarElement() {
-  const { status } = useSession();
+  const { data, status } = useSession();
   const router = useRouter();
 
   return (
@@ -27,9 +27,13 @@ function NavbarElement() {
               <Nav.Link as={Link} href="/chatbot">
                 Chat
               </Nav.Link>
-              <Nav.Link as={Link} href="/dashboard">
-                Dashboard
-              </Nav.Link>
+              {data?.user ? (
+                <Nav.Link as={Link} href="/dashboard">
+                  Dashboard
+                </Nav.Link>
+              ) : (
+                ""
+              )}
               <Nav.Link as={Link} href="/flashcards">
                 Flashcards
               </Nav.Link>

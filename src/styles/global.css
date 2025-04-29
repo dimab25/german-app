@@ -76,7 +76,7 @@ h1 {
   list-style: none;
 
   display: grid;
-  gap: 2rem;
+
   grid-auto-flow: column;
   grid-auto-columns: 100%;
 
@@ -95,6 +95,8 @@ h1 {
 
 .carousel-paragraph {
   color: black;
+  font-weight: 600;
+  font-size: large;
 }
 
 .carousel > li {

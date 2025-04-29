@@ -8,7 +8,7 @@ const validateEmail = (email: string) => {
 };
 
 const validatePassword = (password: string) => {
-  return password.length >= 5;
+  return password.length >= 6;
 };
 
 const validateFlashcardInput = (input: string) => {

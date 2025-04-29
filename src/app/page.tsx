@@ -60,7 +60,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1 style={{ color: "black" }}>How to use DeutschInContext</h1>
+      <h2 style={{ color: "black" }}>How to use DeutschInContext</h2>
 
       <div className="carousel-wrapper">
         <ul className="carousel" ref={carouselRef}>
