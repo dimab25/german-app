@@ -1,5 +1,5 @@
 .pageLayout{
-    padding: 0.5rem 2rem 2rem 2rem;
+    padding: 2rem 2rem 2rem 2rem;
 }
 
 @media (max-width: 768px) {
@@ -10,7 +10,7 @@
   }
 
   .flashcards{
-    height: 20rem;
+    height: 24rem;
     position: relative;
   }
   @media (max-width: 768px) {

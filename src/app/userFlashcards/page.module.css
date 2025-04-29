@@ -2,16 +2,18 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
+  /* background-color: white; */
 }
 
 .CardLevelContainer >button {
     border-radius: 25px;
-width: 30%;
+width: 20%;
 
 }
 @media (max-width: 768px) {
     .CardLevelContainer > button,.selectedFilter>Button  {
             font-size: 0.5rem;
+            width: 30%;
         
             
     }
@@ -22,7 +24,7 @@ width: 30%;
 
   .selectedFilter>Button {
     border-radius: 25px;
-    width: 6rem;
+    width: 7rem;
     min-width: 3rem;
 
     
@@ -31,11 +33,11 @@ width: 30%;
     display: flex;
     justify-content: center;
     flex-direction: row;
-    gap: 5px;
-    padding: 0.5rem;
-    color: hwb(0 0% 100% / 0);
+        gap: 5px;
+    padding: 0rem 0rem 2rem 0rem;
+  
 }
 .pageLayout{
-    padding: 0rem 2rem 2rem 2rem;
+    padding: 3rem 2rem 2rem 2rem;
 }
 

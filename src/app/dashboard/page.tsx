@@ -117,7 +117,7 @@ function Dashboard() {
             <Col md={8}>
               <Card className="mb-2">
                 <Card.Body>
-                  <Card.Title>Flashcards</Card.Title>
+                  <Card.Title>Tools</Card.Title>
                   <div
                     style={{
                       display: "flex",
@@ -129,8 +129,8 @@ function Dashboard() {
                     <div className={styles.flashcardButtons}>
                       <Link
                         href="/userFlashcards"
-                        className="btn btn-outline-secondary "
-                        style={{ width: "12rem" }}
+                        className="btn btn-info "
+                        style={{ width: "9.5rem" }}
                       >
                         <FiUser size={30} />
                         <PiCards size={50} />
@@ -138,8 +138,8 @@ function Dashboard() {
                       </Link>{" "}
                       <Link
                         href="/flashcards"
-                        className="btn btn-outline-secondary"
-                        style={{ width: "12rem" }}
+                        className="btn btn-info"
+                        style={{ width: "9.5rem" }}
                       >
                         <IoEarth size={30} />
                         <PiCards size={50} />
@@ -147,40 +147,41 @@ function Dashboard() {
                         Public Decks
                       </Link>
                       <CreateFlashcard />
+                      <Link
+                      href="/chatbot"
+                      className="btn btn-info"
+                      style={{ width: "9.5rem" }}
+                    >
+                      <IoAddOutline size={30} />
+                      <BsChatSquareText size={50} />
+                      <br />
+                      New chat
+                    </Link>
                     </div>
                   </div>
                 </Card.Body>
               </Card>
 
-              {/* Chats*/}
+              {/* Chats
               <Card className="mb-2">
                 <Card.Body>
                   <Card.Title>Chats</Card.Title>
                   <div className={styles.flashcardButtons}>
                     {" "}
-                    <Link
-                      href="/chatbot"
-                      className="btn btn-outline-secondary"
-                      style={{ width: "12rem" }}
-                    >
-                      <IoAddOutline size={30} />
-                      <BsChatSquareText size={40} />
-                      <br />
-                      New chat
-                    </Link>
+                 
                     <Link
                       href="/chatbot"
                       className="btn btn-outline-secondary"
                       style={{ width: "12rem" }}
                     >
                       <FiUser size={30} />
-                      <BsChatSquareText size={40} />
+                      <BsChatSquareText size={50} />
                       <br />
                       Saved chat
                     </Link>
                   </div>
                 </Card.Body>
-              </Card>
+              </Card> */}
               <Card>
                 <Card.Body>
                   <Card.Title>Links</Card.Title>

@@ -31,7 +31,7 @@ function NavbarElement() {
                 Dashboard
               </Nav.Link>
               <Nav.Link as={Link} href="/flashcards">
-                Flashcards
+               Public Decks
               </Nav.Link>
             </Nav>
             <Nav>

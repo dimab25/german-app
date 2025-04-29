@@ -18,6 +18,7 @@ function CreateFlashcard() {
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [imageUploadMessage, setImageUploadMessage] = useState("")
   const [imageUploadSuccess, setImageUploadSuccess] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [show, setShow] = useState(false);
@@ -26,6 +27,7 @@ function CreateFlashcard() {
     setImagePreviewUrl(null);
     setImageUploadSuccess(false)
     setUploadedImageUrl(null)
+    setImageUploadMessage("")
   };
   const handleShow = () => setShow(true);
 
@@ -41,10 +43,11 @@ function CreateFlashcard() {
     if (file instanceof File) {
       setSelectedFile(file);
       setImagePreviewUrl(URL.createObjectURL(file));
+      setImageUploadMessage("")
     }
   };
-  console.log("selectedFile :>> ", selectedFile);
-  console.log("imagePreviewUrl :>> ", imagePreviewUrl);
+  // console.log("selectedFile :>> ", selectedFile);
+  // console.log("imagePreviewUrl :>> ", imagePreviewUrl);
 
   const handleIconClick = () => {
     document.getElementById("fileUploadInput")?.click();
@@ -71,7 +74,8 @@ function CreateFlashcard() {
       setImageUploadSuccess(result.success);
       setUploadedImageUrl(result.imgUrl);
       setImagePreviewUrl(null)
-      console.log("result image upload :>> ", result);
+      setImageUploadMessage(result.message)
+   
       
     } catch (error) {
       console.error(error);
@@ -119,7 +123,7 @@ function CreateFlashcard() {
 
   return (
     <>
-      <Button variant="outline-secondary" onClick={handleShow}>
+      <Button variant="info" onClick={handleShow}>
          <IoAddOutline  size={30} /><PiCards size={50} /><br />Add new card
       </Button>
 
@@ -176,6 +180,8 @@ function CreateFlashcard() {
            
 
                 {imageUploadSuccess && <div>Image succesfully uploaded!</div>}
+                {imageUploadMessage==="File too large" && <div>The file is too large; it must not exceed 2 MB.</div>}
+                {imageUploadMessage==="Unsupported file type" && <div>Unsupported file type. Only JPG, JPEG, and PNG formats are allowed.</div>}
                 {uploadedImageUrl && (
                 <div style={{display:"flex", justifyContent:"center", padding:"0.5rem"}}>
                   < CldImage

@@ -2,7 +2,13 @@
 import { IoIosSettings } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
-import React, { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CardFooter, Form, FormText, Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -36,14 +42,15 @@ function DisplayFlashcard() {
   const [successUpdate, setSuccessUpdate] = useState<boolean | false>(false);
   const [successDelete, setSuccessDelete] = useState<boolean | false>(false);
   const [newValue, setNewValue] = useState<string | null>(null);
-    const [showClickHere, setShowClickHere] = useState(false);
-    const target = useRef(null);
+  const [showClickHere, setShowClickHere] = useState(false);
+  const target = useRef(null);
   const router = useRouter();
   const handleClose = () => {
     setShow(false);
     setImagePreviewUrl(null);
     setImageUploadSuccess(false);
     setUploadedImageUrl(null);
+    setImageUploadMessage("");
   };
   const handleShow = () => setShow(true);
 
@@ -111,7 +118,7 @@ function DisplayFlashcard() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState<boolean>(false);
-
+  const [imageUploadMessage, setImageUploadMessage] = useState("");
   const handleAttachFile = (e: ChangeEvent<HTMLInputElement>) => {
     // console.log("e.target.files", e.target.files);
     const file = e.target.files?.[0];
@@ -119,6 +126,7 @@ function DisplayFlashcard() {
     if (file instanceof File) {
       setSelectedFile(file);
       setImagePreviewUrl(URL.createObjectURL(file));
+      setImageUploadMessage("");
     }
   };
 
@@ -146,7 +154,7 @@ function DisplayFlashcard() {
       setImageUploadSuccess(result.success);
       setUploadedImageUrl(result.imgUrl);
       setImagePreviewUrl(null);
-      console.log("result image upload :>> ", result);
+      setImageUploadMessage(result.message);
     } catch (error) {
       console.error(error);
     }
@@ -228,7 +236,7 @@ function DisplayFlashcard() {
     }
   };
 
-// UPDATE CARDLEVEL
+  // UPDATE CARDLEVEL
   const updateCardlevel = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -286,7 +294,7 @@ function DisplayFlashcard() {
     }
   }, [status, router]);
 
-useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setShowClickHere(true);
     }, 2000);
@@ -298,16 +306,16 @@ useEffect(() => {
     return <Loader />;
   }
 
-  
   return (
     <>
       <div className={styles.pageLayout}>
+        <h6 style={{ textAlign: "center" }}>Filtered by:</h6>
         <div className={styles.selectedFilter}>
           <Button
             variant="outline-secondary"
             onClick={handleFilter}
             value=""
-            style={{ backgroundColor: selectedFilter === "" && "lightblue" }}
+            style={{ backgroundColor: selectedFilter === "" && "lightgreen" }}
           >
             All
           </Button>
@@ -316,7 +324,7 @@ useEffect(() => {
             onClick={handleFilter}
             value="Easy"
             style={{
-              backgroundColor: selectedFilter === "Easy" && "lightblue",
+              backgroundColor: selectedFilter === "Easy" && "lightgreen",
             }}
           >
             Easy
@@ -326,7 +334,7 @@ useEffect(() => {
             onClick={handleFilter}
             value="Neutral"
             style={{
-              backgroundColor: selectedFilter === "Neutral" && "lightblue",
+              backgroundColor: selectedFilter === "Neutral" && "lightgreen",
             }}
           >
             Neutral
@@ -336,7 +344,7 @@ useEffect(() => {
             onClick={handleFilter}
             value="Difficult"
             style={{
-              backgroundColor: selectedFilter === "Difficult" && "lightblue",
+              backgroundColor: selectedFilter === "Difficult" && "lightgreen",
             }}
           >
             Difficult
@@ -377,13 +385,14 @@ useEffect(() => {
 
             <Card.Body onClick={() => setShowAnswer(!showAnswer)}>
               {/* <Card.Title>Card Title</Card.Title> */}
-              <Card.Text ref={target}
+              <Card.Text
+                ref={target}
                 style={
                   filteredFlashcards &&
                   filteredFlashcards.length > 0 &&
                   !filteredFlashcards[currentIndex]?.imageUrl
                     ? {
-                        minHeight: "11rem",
+                        minHeight: "20rem",
                         paddingTop: "1rem",
                         display: "flex",
                         alignItems: "center",
@@ -391,27 +400,31 @@ useEffect(() => {
                         textAlign: "center",
                         width: "100%",
                       }
-                    : {}
+                    : { padding: "1rem" }
                 }
               >
                 {filteredFlashcards &&
                   filteredFlashcards?.length > 0 &&
                   filteredFlashcards[currentIndex]?.frontside}
               </Card.Text>
-              <Overlay target={target.current} show={showClickHere} placement="right" >
-            {(props) => (
-              <Tooltip id="auto-tooltip" {...props}>
-                Click here!
-              </Tooltip>
-            )}
-          </Overlay>
+              <Overlay
+                target={target.current}
+                show={showClickHere}
+                placement="right"
+              >
+                {(props) => (
+                  <Tooltip id="auto-tooltip" {...props}>
+                    Click here!
+                  </Tooltip>
+                )}
+              </Overlay>
             </Card.Body>
 
             {showAnswer &&
               filteredFlashcards &&
               filteredFlashcards?.length > 0 &&
               filteredFlashcards[currentIndex] && (
-                <CardFooter>
+                <CardFooter style={{ padding: "1.5rem" }}>
                   {filteredFlashcards[currentIndex].backside}
                 </CardFooter>
               )}
@@ -426,7 +439,7 @@ useEffect(() => {
                   <>
                     <Button
                       variant="outline-secondary"
-                      style={{ background: "lightblue" }}
+                      style={{ background: "lightgreen" }}
                       disabled
                     >
                       Easy
@@ -460,7 +473,7 @@ useEffect(() => {
                     </Button>
                     <Button
                       variant="outline-secondary"
-                      style={{ background: "lightblue" }}
+                      style={{ background: "lightgreen" }}
                       disabled
                     >
                       Neutral
@@ -494,7 +507,7 @@ useEffect(() => {
                     </Button>
                     <Button
                       variant="outline-secondary"
-                      style={{ background: "lightblue" }}
+                      style={{ background: "lightgreen" }}
                       disabled
                     >
                       Difficult
@@ -586,6 +599,17 @@ useEffect(() => {
 
                       {imageUploadSuccess && (
                         <div>Image succesfully uploaded!</div>
+                      )}
+                      {imageUploadMessage === "File too large" && (
+                        <div>
+                          The file is too large; it must not exceed 2 MB.
+                        </div>
+                      )}
+                      {imageUploadMessage === "Unsupported file type" && (
+                        <div>
+                          Unsupported file type. Only JPG, JPEG, and PNG formats
+                          are allowed.
+                        </div>
                       )}
                       {uploadedImageUrl && (
                         <div
